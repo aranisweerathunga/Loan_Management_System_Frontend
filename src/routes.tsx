@@ -7,6 +7,9 @@ import { CategoriesPage } from "@/features/products/CategoriesPage";
 import { ProductsPage } from "@/features/products/ProductsPage";
 import { ProductDetailPage } from "@/features/products/ProductDetailPage";
 import { GradesPage } from "@/features/grades/GradesPage";
+import { LoanApplicationDetailPage } from "@/features/loan-applications/LoanApplicationDetailPage";
+import { LoanApplicationsPage } from "@/features/loan-applications/LoanApplicationsPage";
+import { NewLoanApplicationPage } from "@/features/loan-applications/NewLoanApplicationPage";
 import { NotFoundPage } from "@/features/not-found/NotFoundPage";
 
 export const router = createBrowserRouter([
@@ -18,6 +21,9 @@ export const router = createBrowserRouter([
       { path: "dashboard", element: <DashboardPage /> },
       { path: "borrowers", element: <BorrowersPage /> },
       { path: "borrowers/:borrowerId", element: <BorrowerDetailPage /> },
+      { path: "loan-applications", element: <LoanApplicationsPage /> },
+      { path: "loan-applications/new", element: <NewLoanApplicationPage /> },
+      { path: "loan-applications/:applicationId", element: <LoanApplicationDetailPage /> },
       { path: "product-categories", element: <CategoriesPage /> },
       { path: "products", element: <ProductsPage /> },
       { path: "products/:productId", element: <ProductDetailPage /> },

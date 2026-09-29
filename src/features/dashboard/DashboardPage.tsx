@@ -4,8 +4,15 @@ import { Button, ButtonLink } from "@/components/Button";
 import { PageHeader, Panel } from "@/components/PageHeader";
 import { usePageMeta } from "@/components/pageMeta";
 import { listBorrowers } from "@/lib/api/borrowers";
-import { borrowerKeys, categoryKeys, gradeKeys, productKeys } from "@/lib/api/keys";
+import {
+  borrowerKeys,
+  categoryKeys,
+  gradeKeys,
+  loanApplicationKeys,
+  productKeys,
+} from "@/lib/api/keys";
 import { listGrades } from "@/lib/api/grades";
+import { listLoanApplications } from "@/lib/api/loan-applications";
 import { listCategories, listProducts } from "@/lib/api/products";
 import { fullName } from "@/lib/format";
 
@@ -27,16 +34,30 @@ export function DashboardPage() {
     queryKey: gradeKeys.all,
     queryFn: ({ signal }) => listGrades(signal),
   });
+  const applications = useQuery({
+    queryKey: loanApplicationKeys.list({}),
+    queryFn: ({ signal }) => listLoanApplications({}, signal),
+  });
 
-  const allFailed = borrowers.isError && categories.isError && products.isError && grades.isError;
+  const allFailed =
+    borrowers.isError &&
+    categories.isError &&
+    products.isError &&
+    grades.isError &&
+    applications.isError;
   const allLoaded =
-    borrowers.isSuccess && categories.isSuccess && products.isSuccess && grades.isSuccess;
+    borrowers.isSuccess &&
+    categories.isSuccess &&
+    products.isSuccess &&
+    grades.isSuccess &&
+    applications.isSuccess;
   const allEmpty =
     allLoaded &&
     borrowers.data.length === 0 &&
     categories.data.length === 0 &&
     products.data.length === 0 &&
-    grades.data.length === 0;
+    grades.data.length === 0 &&
+    applications.data.length === 0;
 
   const recentBorrowers = [...(borrowers.data ?? [])]
     .sort((left, right) => right.createdAt.localeCompare(left.createdAt))
@@ -49,7 +70,7 @@ export function DashboardPage() {
     <div className="stack">
       <PageHeader
         title="Dashboard"
-        description="Counts of borrowers, product configuration, and grades currently stored. Loan balances, approvals, and repayments are not part of this workspace."
+        description="Counts of borrowers, loan applications, product configuration, and grades currently stored. Loan balances, approvals, and repayments are not part of this workspace."
       />
       {allFailed ? (
         <Panel>
@@ -63,6 +84,7 @@ export function DashboardPage() {
                 void categories.refetch();
                 void products.refetch();
                 void grades.refetch();
+                void applications.refetch();
               }}
             >
               Try again
@@ -92,6 +114,19 @@ export function DashboardPage() {
             isLoading={borrowers.isPending}
             isError={borrowers.isError}
             onRetry={() => void borrowers.refetch()}
+          />
+          <Metric
+            label="Loan applications"
+            value={applications.data?.length}
+            hint={
+              applications.data
+                ? `${applications.data.filter((item) => item.status === "DRAFT").length} draft`
+                : undefined
+            }
+            to="/loan-applications"
+            isLoading={applications.isPending}
+            isError={applications.isError}
+            onRetry={() => void applications.refetch()}
           />
           <Metric
             label="Categories"
@@ -140,8 +175,8 @@ export function DashboardPage() {
           <div className="empty-state">
             <h2>No records yet</h2>
             <p>
-              The database does not contain borrowers, categories, loan products, or grades. Add the
-              records you need from the sections below.
+              The database does not contain borrowers, loan applications, categories, loan products,
+              or grades. Add the records you need from the sections below.
             </p>
             <div className="cluster">
               <ButtonLink to="/borrowers">Add a borrower</ButtonLink>

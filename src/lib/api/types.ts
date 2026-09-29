@@ -174,3 +174,88 @@ export type ProductVersionInput = {
   effectiveTo: string | null;
   configuration: Record<string, unknown>;
 };
+
+export type LoanApplicationStatus = "DRAFT" | "SUBMITTED" | "UNDER_REVIEW";
+
+export type EligibilityAssessmentStatus = "PENDING" | "COMPLETED";
+
+export type LoanApplicationBorrowerSummary = {
+  id: string;
+  firstName: string;
+  middleName: string | null;
+  lastName: string;
+  isActive: boolean;
+};
+
+export type LoanApplicationProductSummary = {
+  id: string;
+  code: string;
+  name: string;
+  isActive: boolean;
+};
+
+export type LoanApplicationVersionSummary = {
+  id: string;
+  versionNumber: number;
+  status: ProductVersionStatus;
+};
+
+export type LoanApplicationPurposeSummary = {
+  id: string;
+  code: string;
+  name: string;
+  isActive: boolean;
+};
+
+export type LoanApplication = {
+  id: string;
+  applicationNumber: string;
+  borrowerId: string;
+  loanProductId: string;
+  productVersionId: string;
+  productPurposeId: string | null;
+  status: LoanApplicationStatus;
+  submittedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+  borrower: LoanApplicationBorrowerSummary;
+  loanProduct: LoanApplicationProductSummary;
+  productVersion: LoanApplicationVersionSummary;
+  productPurpose: LoanApplicationPurposeSummary | null;
+};
+
+export type EligibilityAssessment = {
+  id: string;
+  loanApplicationId: string;
+  productVersionId: string;
+  status: EligibilityAssessmentStatus;
+  assessedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type LoanApplicationDetail = LoanApplication & {
+  eligibilityAssessments: EligibilityAssessment[];
+};
+
+export type ApplicationStatusHistoryEntry = {
+  id: string;
+  loanApplicationId: string;
+  fromStatus: LoanApplicationStatus | null;
+  toStatus: LoanApplicationStatus;
+  changedAt: string;
+  note: string | null;
+};
+
+export type LoanApplicationListFilters = {
+  borrowerId?: string;
+  loanProductId?: string;
+  status?: LoanApplicationStatus;
+};
+
+export type LoanApplicationWriteInput = {
+  borrowerId: string;
+  loanProductId: string;
+  productVersionId: string;
+  productPurposeId: string | null;
+};

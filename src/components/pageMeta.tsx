@@ -1,4 +1,12 @@
-import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useState,
+  type ReactNode,
+} from "react";
 import type { Crumb } from "@/components/Breadcrumbs";
 
 type PageMeta = {
@@ -34,10 +42,13 @@ export function usePageMetaState() {
 
 export function usePageMeta(title: string, breadcrumbs: Crumb[]) {
   const { meta, setMeta } = usePageMetaState();
-  const snapshot = `${title}|${breadcrumbs.map((crumb) => `${crumb.label}:${crumb.to ?? ""}`).join(">")}`;
-  if (meta.snapshot !== snapshot) {
-    setMeta({ snapshot, title, breadcrumbs });
-  }
+  const snapshot = `${title}|${breadcrumbs
+    .map((crumb) => `${crumb.label}:${crumb.to ?? ""}`)
+    .join(">")}`;
+
+  useLayoutEffect(() => {
+    if (meta.snapshot !== snapshot) setMeta({ snapshot, title, breadcrumbs });
+  }, [breadcrumbs, meta.snapshot, setMeta, snapshot, title]);
 
   useEffect(() => {
     document.title = `${title} · Loan Management`;

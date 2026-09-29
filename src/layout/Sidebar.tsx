@@ -2,6 +2,7 @@ import type { Ref } from "react";
 import { NavLink } from "react-router-dom";
 import {
   BadgeCheck,
+  ClipboardList,
   FolderTree,
   Landmark,
   LayoutDashboard,
@@ -23,6 +24,10 @@ type Item = {
 const mainItems: Item[] = [
   { label: "Dashboard", to: "/dashboard", icon: LayoutDashboard, end: true },
   { label: "Borrowers", to: "/borrowers", icon: Users },
+];
+
+const loanItems: Item[] = [
+  { label: "Loan Applications", to: "/loan-applications", icon: ClipboardList },
 ];
 
 const productItems: Item[] = [
@@ -97,6 +102,12 @@ export function Sidebar({
         {mainItems.map((item) => (
           <NavItem key={item.to} item={item} onNavigate={onNavigate} />
         ))}
+        <div className="nav-section">
+          {collapsed ? null : <p className="nav-section__label">Loan Management</p>}
+          {loanItems.map((item) => (
+            <NavItem key={item.to} item={item} onNavigate={onNavigate} />
+          ))}
+        </div>
         <div className="nav-section">
           {collapsed ? null : <p className="nav-section__label">Product Configuration</p>}
           <div className={cx("nav-sub", collapsed && "nav-sub--icons")}>
