@@ -234,6 +234,16 @@ export type EligibilityAssessment = {
   updatedAt: string;
 };
 
+export type JsonValue = string | number | boolean | null | JsonValue[] | { [key: string]: JsonValue };
+
+export type EligibilityOutcome = "ELIGIBLE" | "INELIGIBLE" | "REVIEW_REQUIRED";
+
+export type EligibilityAssessmentRecord = EligibilityAssessment & {
+  inputSnapshot: JsonValue;
+  ruleSnapshot: JsonValue;
+  resultSnapshot: JsonValue | null;
+};
+
 export type LoanApplicationDetail = LoanApplication & {
   eligibilityAssessments: EligibilityAssessment[];
 };

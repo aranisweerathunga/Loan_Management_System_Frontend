@@ -1,6 +1,7 @@
 import { request } from "@/lib/api/client";
 import type {
   ApplicationStatusHistoryEntry,
+  EligibilityAssessmentRecord,
   LoanApplication,
   LoanApplicationDetail,
   LoanApplicationListFilters,
@@ -53,4 +54,29 @@ export function startLoanApplicationReview(applicationId: string) {
   return request<LoanApplicationDetail>(`/loan-applications/${applicationId}/start-review`, {
     method: "POST",
   });
+}
+
+export function listEligibilityAssessments(applicationId: string, signal?: AbortSignal) {
+  return request<EligibilityAssessmentRecord[]>(
+    `/loan-applications/${applicationId}/eligibility-assessments`,
+    { signal },
+  );
+}
+
+export function getEligibilityAssessment(
+  applicationId: string,
+  assessmentId: string,
+  signal?: AbortSignal,
+) {
+  return request<EligibilityAssessmentRecord>(
+    `/loan-applications/${applicationId}/eligibility-assessments/${assessmentId}`,
+    { signal },
+  );
+}
+
+export function createEligibilityAssessment(applicationId: string) {
+  return request<EligibilityAssessmentRecord>(
+    `/loan-applications/${applicationId}/eligibility-assessments`,
+    { method: "POST" },
+  );
 }

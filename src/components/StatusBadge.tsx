@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import type { LoanApplicationStatus, ProductVersionStatus } from "@/lib/api/types";
+import type { EligibilityOutcome, LoanApplicationStatus, ProductVersionStatus } from "@/lib/api/types";
 
 type Tone = "success" | "neutral" | "info" | "warning" | "danger" | "draft" | "retired";
 
@@ -47,4 +47,29 @@ export function applicationStatusLabel(status: LoanApplicationStatus): string {
 export function ApplicationStatusBadge({ status }: { status: LoanApplicationStatus }) {
   const tone: Tone = status === "DRAFT" ? "draft" : status === "SUBMITTED" ? "info" : "warning";
   return <StatusBadge tone={tone}>{applicationStatusLabel(status)}</StatusBadge>;
+}
+
+const eligibilityOutcomeLabels: Record<EligibilityOutcome, string> = {
+  ELIGIBLE: "Eligible",
+  INELIGIBLE: "Ineligible",
+  REVIEW_REQUIRED: "Review required",
+};
+
+export function eligibilityOutcomeLabel(outcome: string): string {
+  if (outcome === "ELIGIBLE" || outcome === "INELIGIBLE" || outcome === "REVIEW_REQUIRED") {
+    return eligibilityOutcomeLabels[outcome];
+  }
+  return outcome;
+}
+
+export function EligibilityOutcomeBadge({ outcome }: { outcome: string }) {
+  const tone: Tone =
+    outcome === "ELIGIBLE"
+      ? "success"
+      : outcome === "INELIGIBLE"
+        ? "danger"
+        : outcome === "REVIEW_REQUIRED"
+          ? "warning"
+          : "neutral";
+  return <StatusBadge tone={tone}>{eligibilityOutcomeLabel(outcome)}</StatusBadge>;
 }

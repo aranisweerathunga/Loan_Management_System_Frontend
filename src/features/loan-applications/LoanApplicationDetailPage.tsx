@@ -26,6 +26,7 @@ import type {
 } from "@/lib/api/types";
 import { displayText, formatTimestamp, fullName } from "@/lib/format";
 import { ApplicationConfigurationForm } from "@/features/loan-applications/ApplicationConfigurationForm";
+import { EligibilitySection } from "@/features/loan-applications/EligibilitySection";
 import { historyCopy, versionSummary } from "@/features/loan-applications/presentation";
 
 type HistoryQuery = {
@@ -202,7 +203,7 @@ function ApplicationWorkspace({
     application.status === "SUBMITTED"
       ? "Configuration is read-only after submission."
       : application.status === "UNDER_REVIEW"
-        ? "Under review. No further action is available in this workflow."
+        ? "Under review. An eligibility assessment does not change the application status."
         : null;
 
   return (
@@ -359,38 +360,13 @@ function ApplicationWorkspace({
           <Panel title="Status history">
             <StatusHistory history={history} />
           </Panel>
-          <Panel title="Eligibility">
-            {application.eligibilityAssessments.length === 0 ? (
-              <p>Eligibility has not been assessed yet.</p>
-            ) : (
-              <ul className="assessment-list">
-                {application.eligibilityAssessments.map((assessment) => (
-                  <li key={assessment.id}>
-                    <strong>{assessment.status === "PENDING" ? "Pending" : "Completed"}</strong>
-                    <span className="muted">
-                      {assessment.assessedAt ? (
-                        <>
-                          Assessed{" "}
-                          <time dateTime={assessment.assessedAt}>
-                            {formatTimestamp(assessment.assessedAt)}
-                          </time>
-                        </>
-                      ) : (
-                        <>
-                          Recorded{" "}
-                          <time dateTime={assessment.createdAt}>
-                            {formatTimestamp(assessment.createdAt)}
-                          </time>
-                        </>
-                      )}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </Panel>
         </div>
       </div>
+      <EligibilitySection
+        applicationId={application.id}
+        applicationNumber={application.applicationNumber}
+        status={application.status}
+      />
     </div>
   );
 }

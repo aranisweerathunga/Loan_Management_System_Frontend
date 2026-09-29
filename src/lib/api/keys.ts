@@ -36,4 +36,8 @@ export const loanApplicationKeys = {
   detail: (applicationId: string) => ["loan-applications", "detail", applicationId] as const,
   history: (applicationId: string) =>
     ["loan-applications", "detail", applicationId, "status-history"] as const,
+  assessments: (applicationId: string) =>
+    ["loan-applications", "detail", applicationId, "eligibility-assessments"] as const,
+  assessment: (applicationId: string, assessmentId: string) =>
+    ["loan-applications", "detail", applicationId, "eligibility-assessments", assessmentId] as const,
 };
