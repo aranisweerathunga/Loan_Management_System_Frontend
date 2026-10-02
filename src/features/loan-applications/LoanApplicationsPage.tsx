@@ -20,6 +20,8 @@ const statuses: { value: LoanApplicationStatus; label: string }[] = [
   { value: "DRAFT", label: "Draft" },
   { value: "SUBMITTED", label: "Submitted" },
   { value: "UNDER_REVIEW", label: "Under review" },
+  { value: "APPROVED", label: "Approved" },
+  { value: "REJECTED", label: "Rejected" },
 ];
 
 export function LoanApplicationsPage() {
@@ -75,7 +77,7 @@ export function LoanApplicationsPage() {
     <div className="stack">
       <PageHeader
         title="Loan Applications"
-        description="Draft, submitted, and in-review applications."
+        description="Draft, submitted, under review, approved, and rejected applications."
         actions={<ButtonLink to="/loan-applications/new">New Application</ButtonLink>}
       />
       <div className="filters">

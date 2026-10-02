@@ -38,6 +38,16 @@ const applicationStatusLabels: Record<LoanApplicationStatus, string> = {
   DRAFT: "Draft",
   SUBMITTED: "Submitted",
   UNDER_REVIEW: "Under review",
+  APPROVED: "Approved",
+  REJECTED: "Rejected",
+};
+
+const applicationStatusTones: Record<LoanApplicationStatus, Tone> = {
+  DRAFT: "draft",
+  SUBMITTED: "info",
+  UNDER_REVIEW: "warning",
+  APPROVED: "success",
+  REJECTED: "danger",
 };
 
 export function applicationStatusLabel(status: LoanApplicationStatus): string {
@@ -45,8 +55,9 @@ export function applicationStatusLabel(status: LoanApplicationStatus): string {
 }
 
 export function ApplicationStatusBadge({ status }: { status: LoanApplicationStatus }) {
-  const tone: Tone = status === "DRAFT" ? "draft" : status === "SUBMITTED" ? "info" : "warning";
-  return <StatusBadge tone={tone}>{applicationStatusLabel(status)}</StatusBadge>;
+  return (
+    <StatusBadge tone={applicationStatusTones[status]}>{applicationStatusLabel(status)}</StatusBadge>
+  );
 }
 
 const eligibilityOutcomeLabels: Record<EligibilityOutcome, string> = {

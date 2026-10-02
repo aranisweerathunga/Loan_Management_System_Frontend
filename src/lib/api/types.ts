@@ -175,7 +175,14 @@ export type ProductVersionInput = {
   configuration: Record<string, unknown>;
 };
 
-export type LoanApplicationStatus = "DRAFT" | "SUBMITTED" | "UNDER_REVIEW";
+export type LoanApplicationStatus =
+  | "DRAFT"
+  | "SUBMITTED"
+  | "UNDER_REVIEW"
+  | "APPROVED"
+  | "REJECTED";
+
+export type ApplicationDecisionType = "APPROVED" | "REJECTED";
 
 export type EligibilityAssessmentStatus = "PENDING" | "COMPLETED";
 
@@ -246,6 +253,15 @@ export type EligibilityAssessmentRecord = EligibilityAssessment & {
 
 export type LoanApplicationDetail = LoanApplication & {
   eligibilityAssessments: EligibilityAssessment[];
+};
+
+export type ApplicationDecision = {
+  id: string;
+  loanApplicationId: string;
+  decision: ApplicationDecisionType;
+  remarks: string | null;
+  decidedAt: string;
+  createdAt: string;
 };
 
 export type ApplicationStatusHistoryEntry = {

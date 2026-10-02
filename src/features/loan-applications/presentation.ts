@@ -46,6 +46,12 @@ export function historyCopy(entry: ApplicationStatusHistoryEntry): {
   if (entry.fromStatus === "SUBMITTED" && entry.toStatus === "UNDER_REVIEW") {
     return { title: "Under review", detail: "Review started" };
   }
+  if (entry.fromStatus === "UNDER_REVIEW" && entry.toStatus === "APPROVED") {
+    return { title: "Approved", detail: "Application approved" };
+  }
+  if (entry.fromStatus === "UNDER_REVIEW" && entry.toStatus === "REJECTED") {
+    return { title: "Rejected", detail: "Application rejected" };
+  }
   return {
     title: applicationStatusLabel(entry.toStatus),
     detail: "Status changed",

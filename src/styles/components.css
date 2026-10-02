@@ -682,11 +682,12 @@ a.metric:hover {
   min-width: 0;
 }
 
-.eligibility-history__main {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  min-width: 0;
+.decision-remarks {
+  margin: 0;
+  color: var(--color-text);
+  font-size: var(--text-sm);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
 }
 
 .eligibility-facts {

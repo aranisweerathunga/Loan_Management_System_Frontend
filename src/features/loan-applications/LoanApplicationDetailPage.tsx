@@ -12,8 +12,10 @@ import { usePageMeta } from "@/components/pageMeta";
 import { ApiError, getErrorMessage } from "@/lib/api/client";
 import { loanApplicationKeys, productKeys } from "@/lib/api/keys";
 import {
+  approveLoanApplication,
   getLoanApplication,
   listApplicationStatusHistory,
+  rejectLoanApplication,
   startLoanApplicationReview,
   submitLoanApplication,
   updateLoanApplication,
@@ -26,8 +28,10 @@ import type {
 } from "@/lib/api/types";
 import { displayText, formatTimestamp, fullName } from "@/lib/format";
 import { ApplicationConfigurationForm } from "@/features/loan-applications/ApplicationConfigurationForm";
+import { DecisionHistorySection } from "@/features/loan-applications/DecisionHistorySection";
 import { EligibilitySection } from "@/features/loan-applications/EligibilitySection";
 import { historyCopy, versionSummary } from "@/features/loan-applications/presentation";
+import { WorkflowDecisionDialog } from "@/features/loan-applications/WorkflowDecisionDialog";
 
 type HistoryQuery = {
   isPending: boolean;
@@ -58,7 +62,9 @@ export function LoanApplicationDetailPage() {
   });
   const [editing, setEditing] = useState(false);
   const [editSession, setEditSession] = useState(0);
-  const [pendingAction, setPendingAction] = useState<"submit" | "review" | null>(null);
+  const [pendingAction, setPendingAction] = useState<"submit" | "review" | "approve" | "reject" | null>(
+    null,
+  );
   const [actionError, setActionError] = useState<string | null>(null);
   const [actionBusy, setActionBusy] = useState(false);
 
@@ -78,8 +84,56 @@ export function LoanApplicationDetailPage() {
     toast.success("Application saved.");
   }
 
+  async function refreshWorkflow(applicationRecordId: string) {
+    await Promise.all([
+      queryClient.invalidateQueries({
+        queryKey: loanApplicationKeys.detail(applicationRecordId),
+        exact: true,
+      }),
+      queryClient.invalidateQueries({
+        queryKey: loanApplicationKeys.history(applicationRecordId),
+      }),
+      queryClient.invalidateQueries({
+        queryKey: loanApplicationKeys.decisions(applicationRecordId),
+      }),
+      queryClient.invalidateQueries({ queryKey: ["loan-applications", "list"] }),
+    ]);
+  }
+
+  async function runDecision(remarks?: string) {
+    if ((pendingAction !== "approve" && pendingAction !== "reject") || actionBusy || !application.data) {
+      return;
+    }
+    const applicationRecordId = application.data.id;
+    setActionBusy(true);
+    setActionError(null);
+    try {
+      if (pendingAction === "approve") {
+        await approveLoanApplication(applicationRecordId, remarks);
+        toast.success("Application approved.");
+      } else {
+        await rejectLoanApplication(applicationRecordId, remarks ?? "");
+        toast.success("Application rejected.");
+      }
+      await refreshWorkflow(applicationRecordId);
+      setPendingAction(null);
+    } catch (error) {
+      setActionError(getErrorMessage(error));
+      if (error instanceof ApiError && (error.status === 409 || error.status === 404)) {
+        await refreshWorkflow(applicationRecordId);
+      }
+    } finally {
+      setActionBusy(false);
+    }
+  }
   async function runAction() {
-    if (!pendingAction || actionBusy || !application.data) return;
+    if (
+      (pendingAction !== "submit" && pendingAction !== "review") ||
+      actionBusy ||
+      !application.data
+    ) {
+      return;
+    }
     setActionBusy(true);
     setActionError(null);
     try {
@@ -147,12 +201,21 @@ export function LoanApplicationDetailPage() {
               setActionError(null);
               setPendingAction("review");
             }}
+            onApprove={() => {
+              setActionError(null);
+              setPendingAction("approve");
+            }}
+            onReject={() => {
+              setActionError(null);
+              setPendingAction("reject");
+            }}
+            decisionLocked={actionBusy || pendingAction === "approve" || pendingAction === "reject"}
             history={history}
           />
         ) : null}
       </QueryState>
       <ConfirmDialog
-        open={pendingAction !== null}
+        open={pendingAction === "submit" || pendingAction === "review"}
         title={
           pendingAction === "review"
             ? `Start review for ${application.data?.applicationNumber ?? "this application"}?`
@@ -171,6 +234,19 @@ export function LoanApplicationDetailPage() {
           if (!actionBusy) setPendingAction(null);
         }}
       />
+      <WorkflowDecisionDialog
+        key={pendingAction === "approve" || pendingAction === "reject" ? pendingAction : "closed"}
+        mode={pendingAction === "approve" || pendingAction === "reject" ? pendingAction : null}
+        applicationNumber={application.data?.applicationNumber ?? "this application"}
+        busy={actionBusy}
+        error={actionError}
+        canDecide={application.data?.status === "UNDER_REVIEW"}
+        onApprove={(remarks) => void runDecision(remarks)}
+        onReject={(remarks) => void runDecision(remarks)}
+        onClose={() => {
+          if (!actionBusy) setPendingAction(null);
+        }}
+      />
     </>
   );
 }
@@ -185,6 +261,9 @@ function ApplicationWorkspace({
   onSave,
   onSubmit,
   onStartReview,
+  onApprove,
+  onReject,
+  decisionLocked,
   history,
 }: {
   application: LoanApplicationDetail;
@@ -196,6 +275,9 @@ function ApplicationWorkspace({
   onSave: (input: LoanApplicationWriteInput) => Promise<void>;
   onSubmit: () => void;
   onStartReview: () => void;
+  onApprove: () => void;
+  onReject: () => void;
+  decisionLocked: boolean;
   history: HistoryQuery;
 }) {
   const version = versionDates ?? application.productVersion;
@@ -204,7 +286,11 @@ function ApplicationWorkspace({
       ? "Configuration is read-only after submission."
       : application.status === "UNDER_REVIEW"
         ? "Under review. An eligibility assessment does not change the application status."
-        : null;
+        : application.status === "APPROVED"
+          ? "Application approved. This approval completes the application workflow. Loan facility creation is handled separately."
+          : application.status === "REJECTED"
+            ? "Application rejected. The recorded reason is in the decision history."
+            : null;
 
   return (
     <div className="stack">
@@ -263,6 +349,16 @@ function ApplicationWorkspace({
               <Button type="button" onClick={onStartReview}>
                 Start review
               </Button>
+            ) : null}
+            {application.status === "UNDER_REVIEW" ? (
+              <>
+                <Button type="button" onClick={onApprove} disabled={decisionLocked}>
+                  Approve
+                </Button>
+                <Button type="button" variant="danger" onClick={onReject} disabled={decisionLocked}>
+                  Reject
+                </Button>
+              </>
             ) : null}
           </div>
         )}
@@ -360,6 +456,7 @@ function ApplicationWorkspace({
           <Panel title="Status history">
             <StatusHistory history={history} />
           </Panel>
+          <DecisionHistorySection applicationId={application.id} />
         </div>
       </div>
       <EligibilitySection

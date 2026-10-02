@@ -1,5 +1,6 @@
 import { request } from "@/lib/api/client";
 import type {
+  ApplicationDecision,
   ApplicationStatusHistoryEntry,
   EligibilityAssessmentRecord,
   LoanApplication,
@@ -54,6 +55,24 @@ export function startLoanApplicationReview(applicationId: string) {
   return request<LoanApplicationDetail>(`/loan-applications/${applicationId}/start-review`, {
     method: "POST",
   });
+}
+
+export function approveLoanApplication(applicationId: string, remarks?: string) {
+  return request<LoanApplicationDetail>(`/loan-applications/${applicationId}/approve`, {
+    method: "POST",
+    body: remarks ? { remarks } : {},
+  });
+}
+
+export function rejectLoanApplication(applicationId: string, remarks: string) {
+  return request<LoanApplicationDetail>(`/loan-applications/${applicationId}/reject`, {
+    method: "POST",
+    body: { remarks },
+  });
+}
+
+export function listApplicationDecisions(applicationId: string, signal?: AbortSignal) {
+  return request<ApplicationDecision[]>(`/loan-applications/${applicationId}/decisions`, { signal });
 }
 
 export function listEligibilityAssessments(applicationId: string, signal?: AbortSignal) {

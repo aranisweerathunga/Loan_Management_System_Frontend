@@ -167,6 +167,9 @@ function EmptyAssessments({ status }: { status: LoanApplicationStatus }) {
       </p>
     );
   }
+  if (status === "APPROVED" || status === "REJECTED") {
+    return <p>No eligibility assessment has been recorded.</p>;
+  }
   return (
     <p>
       No eligibility assessment has been recorded. Submit the application and move it to review before
@@ -352,7 +355,9 @@ function AssessmentDetailBody({
             value={
               context.applicationStatus === "DRAFT" ||
               context.applicationStatus === "SUBMITTED" ||
-              context.applicationStatus === "UNDER_REVIEW" ? (
+              context.applicationStatus === "UNDER_REVIEW" ||
+              context.applicationStatus === "APPROVED" ||
+              context.applicationStatus === "REJECTED" ? (
                 <ApplicationStatusBadge status={context.applicationStatus} />
               ) : (
                 displayText(context.applicationStatus)

@@ -70,7 +70,7 @@ export function DashboardPage() {
     <div className="stack">
       <PageHeader
         title="Dashboard"
-        description="Counts of borrowers, loan applications, product configuration, and grades currently stored. Loan balances, approvals, and repayments are not part of this workspace."
+        description="Counts of borrowers, loan applications, product configuration, and grades currently stored. This view does not show approval rates, loan balances, or repayments."
       />
       {allFailed ? (
         <Panel>
