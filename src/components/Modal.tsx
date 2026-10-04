@@ -15,6 +15,8 @@ type ModalProps = {
   size?: "sm" | "md" | "lg";
   footer?: ReactNode;
   submitLabel?: string;
+  submitVariant?: "primary" | "danger";
+  loadingLabel?: string;
   formId?: string;
 };
 
@@ -29,6 +31,8 @@ export function Modal({
   size = "sm",
   footer,
   submitLabel,
+  submitVariant = "primary",
+  loadingLabel = "Saving…",
   formId,
 }: ModalProps) {
   const dialogRef = useRef<HTMLDivElement>(null);
@@ -84,7 +88,13 @@ export function Modal({
         <Button type="button" variant="secondary" onClick={requestClose} disabled={busy}>
           Cancel
         </Button>
-        <Button type="submit" form={formId} loading={busy} loadingLabel="Saving…">
+        <Button
+          type="submit"
+          form={formId}
+          variant={submitVariant}
+          loading={busy}
+          loadingLabel={loadingLabel}
+        >
           {submitLabel}
         </Button>
       </>

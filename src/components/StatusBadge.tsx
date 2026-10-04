@@ -1,5 +1,10 @@
 import type { ReactNode } from "react";
-import type { EligibilityOutcome, LoanApplicationStatus, ProductVersionStatus } from "@/lib/api/types";
+import type {
+  EligibilityOutcome,
+  LoanApplicationStatus,
+  LoanFacilityStatus,
+  ProductVersionStatus,
+} from "@/lib/api/types";
 
 type Tone = "success" | "neutral" | "info" | "warning" | "danger" | "draft" | "retired";
 
@@ -58,6 +63,28 @@ export function ApplicationStatusBadge({ status }: { status: LoanApplicationStat
   return (
     <StatusBadge tone={applicationStatusTones[status]}>{applicationStatusLabel(status)}</StatusBadge>
   );
+}
+
+const facilityStatusLabels: Record<LoanFacilityStatus, string> = {
+  PENDING_DISBURSEMENT: "Pending Disbursement",
+  ACTIVE: "Active",
+};
+
+export function facilityStatusLabel(status: string): string {
+  if (status === "PENDING_DISBURSEMENT" || status === "ACTIVE") {
+    return facilityStatusLabels[status];
+  }
+  return status;
+}
+
+export function FacilityStatusBadge({ status }: { status: string }) {
+  const tone: Tone =
+    status === "PENDING_DISBURSEMENT"
+      ? "warning"
+      : status === "ACTIVE"
+        ? "success"
+        : "neutral";
+  return <StatusBadge tone={tone}>{facilityStatusLabel(status)}</StatusBadge>;
 }
 
 const eligibilityOutcomeLabels: Record<EligibilityOutcome, string> = {

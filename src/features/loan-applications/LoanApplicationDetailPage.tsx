@@ -1,16 +1,16 @@
 import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { Button, ButtonLink } from "@/components/Button";
 import { DefinitionList } from "@/components/Breadcrumbs";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { Panel } from "@/components/PageHeader";
 import { EmptyState, QueryState } from "@/components/QueryState";
-import { ApplicationStatusBadge, VersionBadge } from "@/components/StatusBadge";
+import { ApplicationStatusBadge, FacilityStatusBadge, VersionBadge } from "@/components/StatusBadge";
 import { useToast } from "@/components/Toast";
 import { usePageMeta } from "@/components/pageMeta";
 import { ApiError, getErrorMessage } from "@/lib/api/client";
-import { loanApplicationKeys, productKeys } from "@/lib/api/keys";
+import { loanApplicationKeys, loanFacilityKeys, productKeys } from "@/lib/api/keys";
 import {
   approveLoanApplication,
   getLoanApplication,
@@ -32,6 +32,8 @@ import { DecisionHistorySection } from "@/features/loan-applications/DecisionHis
 import { EligibilitySection } from "@/features/loan-applications/EligibilitySection";
 import { historyCopy, versionSummary } from "@/features/loan-applications/presentation";
 import { WorkflowDecisionDialog } from "@/features/loan-applications/WorkflowDecisionDialog";
+import { CreateFacilityDialog } from "@/features/loan-facilities/CreateFacilityDialog";
+import { createLoanFacility } from "@/lib/api/loan-facilities";
 
 type HistoryQuery = {
   isPending: boolean;
@@ -43,6 +45,7 @@ type HistoryQuery = {
 
 export function LoanApplicationDetailPage() {
   const { applicationId = "" } = useParams();
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
   const toast = useToast();
   const application = useQuery({
@@ -67,6 +70,9 @@ export function LoanApplicationDetailPage() {
   );
   const [actionError, setActionError] = useState<string | null>(null);
   const [actionBusy, setActionBusy] = useState(false);
+  const [createOpen, setCreateOpen] = useState(false);
+  const [createBusy, setCreateBusy] = useState(false);
+  const [facilityNotice, setFacilityNotice] = useState<string | null>(null);
 
   const missing =
     application.isError &&
@@ -100,16 +106,17 @@ export function LoanApplicationDetailPage() {
     ]);
   }
 
-  async function runDecision(remarks?: string) {
+  async function runDecision(authorizedPrincipalAmount?: string, remarks?: string) {
     if ((pendingAction !== "approve" && pendingAction !== "reject") || actionBusy || !application.data) {
       return;
     }
+    if (pendingAction === "approve" && !authorizedPrincipalAmount) return;
     const applicationRecordId = application.data.id;
     setActionBusy(true);
     setActionError(null);
     try {
-      if (pendingAction === "approve") {
-        await approveLoanApplication(applicationRecordId, remarks);
+      if (pendingAction === "approve" && authorizedPrincipalAmount) {
+        await approveLoanApplication(applicationRecordId, authorizedPrincipalAmount, remarks);
         toast.success("Application approved.");
       } else {
         await rejectLoanApplication(applicationRecordId, remarks ?? "");
@@ -126,6 +133,41 @@ export function LoanApplicationDetailPage() {
       setActionBusy(false);
     }
   }
+
+  async function handleCreateFacility(facilityDate: string) {
+    if (!application.data || createBusy) return;
+    const applicationRecordId = application.data.id;
+    setCreateBusy(true);
+    try {
+      const created = await createLoanFacility(applicationRecordId, {
+        facilityDate,
+        currencyCode: "LKR",
+      });
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: loanApplicationKeys.detail(applicationRecordId) }),
+        queryClient.invalidateQueries({ queryKey: loanFacilityKeys.all }),
+      ]);
+      toast.success(`Facility ${created.facilityNumber} created.`);
+      setCreateOpen(false);
+      navigate(`/loan-facilities/${created.id}`);
+    } catch (error) {
+      if (error instanceof ApiError && (error.status === 409 || error.status === 404)) {
+        const latest = await queryClient.fetchQuery({
+          queryKey: loanApplicationKeys.detail(applicationRecordId),
+          queryFn: ({ signal }) => getLoanApplication(applicationRecordId, signal),
+        });
+        if (latest.facility) {
+          setFacilityNotice(getErrorMessage(error));
+          setCreateOpen(false);
+          return;
+        }
+      }
+      throw error;
+    } finally {
+      setCreateBusy(false);
+    }
+  }
+
   async function runAction() {
     if (
       (pendingAction !== "submit" && pendingAction !== "review") ||
@@ -210,12 +252,18 @@ export function LoanApplicationDetailPage() {
               setPendingAction("reject");
             }}
             decisionLocked={actionBusy || pendingAction === "approve" || pendingAction === "reject"}
+            facilityNotice={facilityNotice}
+            onCreateFacility={() => {
+              setFacilityNotice(null);
+              setCreateOpen(true);
+            }}
             history={history}
           />
         ) : null}
       </QueryState>
+      {pendingAction === "submit" || pendingAction === "review" ? (
       <ConfirmDialog
-        open={pendingAction === "submit" || pendingAction === "review"}
+        open
         title={
           pendingAction === "review"
             ? `Start review for ${application.data?.applicationNumber ?? "this application"}?`
@@ -234,19 +282,32 @@ export function LoanApplicationDetailPage() {
           if (!actionBusy) setPendingAction(null);
         }}
       />
+      ) : null}
+      {pendingAction === "approve" || pendingAction === "reject" ? (
       <WorkflowDecisionDialog
-        key={pendingAction === "approve" || pendingAction === "reject" ? pendingAction : "closed"}
-        mode={pendingAction === "approve" || pendingAction === "reject" ? pendingAction : null}
+        mode={pendingAction}
         applicationNumber={application.data?.applicationNumber ?? "this application"}
         busy={actionBusy}
         error={actionError}
         canDecide={application.data?.status === "UNDER_REVIEW"}
-        onApprove={(remarks) => void runDecision(remarks)}
-        onReject={(remarks) => void runDecision(remarks)}
+        onApprove={(amount, remarks) => void runDecision(amount, remarks)}
+        onReject={(remarks) => void runDecision(undefined, remarks)}
         onClose={() => {
           if (!actionBusy) setPendingAction(null);
         }}
       />
+      ) : null}
+      {createOpen && application.data ? (
+        <CreateFacilityDialog
+          applicationNumber={application.data.applicationNumber}
+          busy={createBusy}
+          error={null}
+          onSubmit={handleCreateFacility}
+          onClose={() => {
+            if (!createBusy) setCreateOpen(false);
+          }}
+        />
+      ) : null}
     </>
   );
 }
@@ -264,6 +325,8 @@ function ApplicationWorkspace({
   onApprove,
   onReject,
   decisionLocked,
+  facilityNotice,
+  onCreateFacility,
   history,
 }: {
   application: LoanApplicationDetail;
@@ -278,6 +341,8 @@ function ApplicationWorkspace({
   onApprove: () => void;
   onReject: () => void;
   decisionLocked: boolean;
+  facilityNotice: string | null;
+  onCreateFacility: () => void;
   history: HistoryQuery;
 }) {
   const version = versionDates ?? application.productVersion;
@@ -287,13 +352,20 @@ function ApplicationWorkspace({
       : application.status === "UNDER_REVIEW"
         ? "Under review. An eligibility assessment does not change the application status."
         : application.status === "APPROVED"
-          ? "Application approved. This approval completes the application workflow. Loan facility creation is handled separately."
+          ? application.facility
+            ? `Application approved. Facility ${application.facility.facilityNumber} is linked to this application.`
+            : "Application approved. Create a facility when funds should be authorized for disbursement. Approval does not disburse funds."
           : application.status === "REJECTED"
             ? "Application rejected. The recorded reason is in the decision history."
             : null;
 
   return (
     <div className="stack">
+      {facilityNotice ? (
+        <p className="callout" role="status">
+          {facilityNotice}
+        </p>
+      ) : null}
       <header className="identity-header">
         <div>
           <p className="eyebrow">Loan application</p>
@@ -316,6 +388,14 @@ function ApplicationWorkspace({
             {application.productPurpose ? (
               <li>
                 {application.productPurpose.name} ({application.productPurpose.code})
+              </li>
+            ) : null}
+            {application.facility ? (
+              <li className="inline-status">
+                <Link to={`/loan-facilities/${application.facility.id}`}>
+                  {application.facility.facilityNumber}
+                </Link>
+                <FacilityStatusBadge status={application.facility.status} />
               </li>
             ) : null}
             <li>
@@ -359,6 +439,14 @@ function ApplicationWorkspace({
                   Reject
                 </Button>
               </>
+            ) : null}
+            {application.status === "APPROVED" && application.facility === null ? (
+              <Button type="button" onClick={onCreateFacility}>
+                Create Facility
+              </Button>
+            ) : null}
+            {application.facility ? (
+              <ButtonLink to={`/loan-facilities/${application.facility.id}`}>View Facility</ButtonLink>
             ) : null}
           </div>
         )}

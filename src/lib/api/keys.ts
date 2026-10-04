@@ -43,3 +43,24 @@ export const loanApplicationKeys = {
   assessment: (applicationId: string, assessmentId: string) =>
     ["loan-applications", "detail", applicationId, "eligibility-assessments", assessmentId] as const,
 };
+
+export const loanFacilityKeys = {
+  all: ["loan-facilities"] as const,
+  list: (filters: { borrowerId?: string; loanProductId?: string; status?: string }) =>
+    [
+      "loan-facilities",
+      "list",
+      filters.status ?? "all",
+      filters.borrowerId ?? "all",
+      filters.loanProductId ?? "all",
+    ] as const,
+  detail: (facilityId: string) => ["loan-facilities", "detail", facilityId] as const,
+  disbursements: (facilityId: string) =>
+    ["loan-facilities", "detail", facilityId, "disbursements"] as const,
+  disbursement: (facilityId: string, disbursementId: string) =>
+    ["loan-facilities", "detail", facilityId, "disbursements", disbursementId] as const,
+  transactions: (facilityId: string) =>
+    ["loan-facilities", "detail", facilityId, "transactions"] as const,
+  transaction: (facilityId: string, transactionId: string) =>
+    ["loan-facilities", "detail", facilityId, "transactions", transactionId] as const,
+};

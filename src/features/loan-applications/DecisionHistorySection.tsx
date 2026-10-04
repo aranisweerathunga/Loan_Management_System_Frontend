@@ -6,6 +6,7 @@ import { getErrorMessage } from "@/lib/api/client";
 import { loanApplicationKeys } from "@/lib/api/keys";
 import { listApplicationDecisions } from "@/lib/api/loan-applications";
 import { formatTimestamp } from "@/lib/format";
+import { formatMoneyAmount } from "@/lib/money";
 
 export function DecisionHistorySection({ applicationId }: { applicationId: string }) {
   const decisions = useQuery({
@@ -48,6 +49,18 @@ export function DecisionHistorySection({ applicationId }: { applicationId: strin
                   Decided{" "}
                   <time dateTime={decision.decidedAt}>{formatTimestamp(decision.decidedAt)}</time>
                 </p>
+                {decision.decision === "APPROVED" ? (
+                  decision.authorizedPrincipalAmount ? (
+                    <p className="eligibility-meta">
+                      Authorized principal:{" "}
+                      {formatMoneyAmount(decision.authorizedPrincipalAmount, "LKR")}
+                    </p>
+                  ) : (
+                    <p className="eligibility-meta">
+                      No authorized principal was recorded with this approval.
+                    </p>
+                  )
+                ) : null}
                 {decision.remarks ? (
                   <p className="decision-remarks">{decision.remarks}</p>
                 ) : (

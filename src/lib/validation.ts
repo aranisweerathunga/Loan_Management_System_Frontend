@@ -1,5 +1,5 @@
 import { ApiError } from "@/lib/api/client";
-import { canonicalizeMoney } from "@/lib/money";
+import { canonicalPositiveMoney, canonicalizeMoney } from "@/lib/money";
 
 const CODE_PATTERN = /^[A-Za-z0-9_-]+$/;
 const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
@@ -94,6 +94,20 @@ export function validatePositiveInteger(value: string): string | undefined {
 export function validateMoney(value: string): string | undefined {
   if (!canonicalizeMoney(value)) {
     return "Enter a non-negative amount with up to 2 decimal places, such as 1500.00.";
+  }
+  return undefined;
+}
+
+export function validatePositiveMoney(value: string, label = "Amount"): string | undefined {
+  const trimmed = value.trim();
+  if (!trimmed) return `${label} is required.`;
+  if (!canonicalizeMoney(trimmed)) {
+    return "Enter a positive amount with up to 2 decimal places, such as 1000000.00.";
+  }
+  if (!canonicalPositiveMoney(trimmed)) {
+    return canonicalizeMoney(trimmed) === "0.00"
+      ? "Enter an amount greater than zero."
+      : "Amount exceeds the supported precision.";
   }
   return undefined;
 }

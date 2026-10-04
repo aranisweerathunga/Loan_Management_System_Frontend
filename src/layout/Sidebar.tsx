@@ -2,9 +2,10 @@ import type { Ref } from "react";
 import { NavLink } from "react-router-dom";
 import {
   BadgeCheck,
+  Banknote,
   ClipboardList,
   FolderTree,
-  Landmark,
+  Layers,
   LayoutDashboard,
   PanelLeftClose,
   PanelLeftOpen,
@@ -28,11 +29,12 @@ const mainItems: Item[] = [
 
 const loanItems: Item[] = [
   { label: "Loan Applications", to: "/loan-applications", icon: ClipboardList },
+  { label: "Loan Facilities", to: "/loan-facilities", icon: Banknote },
 ];
 
 const productItems: Item[] = [
   { label: "Categories", to: "/product-categories", icon: FolderTree },
-  { label: "Loan Products", to: "/products", icon: Landmark },
+  { label: "Loan Products", to: "/products", icon: Layers },
 ];
 
 const referenceItems: Item[] = [{ label: "Grades", to: "/grades", icon: BadgeCheck }];

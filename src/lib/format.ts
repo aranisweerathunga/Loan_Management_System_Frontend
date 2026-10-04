@@ -13,6 +13,10 @@ export function displayText(value: string | null | undefined): string {
   return value;
 }
 
+export function utcTodayDate(): string {
+  return new Date().toISOString().slice(0, 10);
+}
+
 export function formatDateOnly(value: string | null | undefined): string {
   if (!value) return "—";
   const match = /^(\d{4})-(\d{2})-(\d{2})/.exec(value);

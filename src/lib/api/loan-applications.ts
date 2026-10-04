@@ -57,10 +57,14 @@ export function startLoanApplicationReview(applicationId: string) {
   });
 }
 
-export function approveLoanApplication(applicationId: string, remarks?: string) {
+export function approveLoanApplication(
+  applicationId: string,
+  authorizedPrincipalAmount: string,
+  remarks?: string,
+) {
   return request<LoanApplicationDetail>(`/loan-applications/${applicationId}/approve`, {
     method: "POST",
-    body: remarks ? { remarks } : {},
+    body: remarks ? { authorizedPrincipalAmount, remarks } : { authorizedPrincipalAmount },
   });
 }
 

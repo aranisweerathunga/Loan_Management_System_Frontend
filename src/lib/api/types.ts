@@ -251,8 +251,17 @@ export type EligibilityAssessmentRecord = EligibilityAssessment & {
   resultSnapshot: JsonValue | null;
 };
 
+export type LoanFacilityStatus = "PENDING_DISBURSEMENT" | "ACTIVE";
+
+export type LoanApplicationFacilitySummary = {
+  id: string;
+  facilityNumber: string;
+  status: LoanFacilityStatus;
+};
+
 export type LoanApplicationDetail = LoanApplication & {
   eligibilityAssessments: EligibilityAssessment[];
+  facility: LoanApplicationFacilitySummary | null;
 };
 
 export type ApplicationDecision = {
@@ -260,6 +269,7 @@ export type ApplicationDecision = {
   loanApplicationId: string;
   decision: ApplicationDecisionType;
   remarks: string | null;
+  authorizedPrincipalAmount: string | null;
   decidedAt: string;
   createdAt: string;
 };
@@ -284,4 +294,62 @@ export type LoanApplicationWriteInput = {
   loanProductId: string;
   productVersionId: string;
   productPurposeId: string | null;
+};
+
+export type LoanFacility = {
+  id: string;
+  facilityNumber: string;
+  loanApplicationId: string;
+  borrowerId: string;
+  loanProductId: string;
+  productVersionId: string;
+  productPurposeId: string | null;
+  authorizedPrincipalAmount: string;
+  totalDisbursed: string;
+  remainingAuthorizedAmount: string;
+  currencyCode: string;
+  facilityDate: string;
+  status: LoanFacilityStatus;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type LoanFacilityListFilters = {
+  status?: LoanFacilityStatus;
+  borrowerId?: string;
+  loanProductId?: string;
+};
+
+export type CreateLoanFacilityInput = {
+  facilityDate: string;
+  currencyCode: "LKR";
+};
+
+export type LoanDisbursement = {
+  id: string;
+  loanFacilityId: string;
+  amount: string;
+  disbursementDate: string;
+  reference: string | null;
+  remarks: string | null;
+  createdAt: string;
+};
+
+export type CreateLoanDisbursementInput = {
+  amount: string;
+  disbursementDate: string;
+  reference?: string;
+  remarks?: string;
+};
+
+export type LoanTransactionType = "DISBURSEMENT";
+
+export type LoanTransaction = {
+  id: string;
+  loanFacilityId: string;
+  type: LoanTransactionType;
+  principalAmount: string;
+  transactionDate: string;
+  loanDisbursementId: string | null;
+  createdAt: string;
 };
