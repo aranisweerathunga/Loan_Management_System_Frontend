@@ -29,6 +29,7 @@ export function NewLoanApplicationPage() {
   return (
     <div className="stack">
       <PageHeader
+        eyebrow="Loan Management"
         title="New application"
         description="Creates a draft. The application number is assigned when the draft is saved."
       />

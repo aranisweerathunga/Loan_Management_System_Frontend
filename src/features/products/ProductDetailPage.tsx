@@ -89,10 +89,18 @@ function ProductDetailBody({
             <h1>{record.name}</h1>
             <ActiveBadge active={record.isActive} />
           </div>
-          <p className="muted">
-            <span className="mono">{record.code}</span>
-            {category ? ` · ${category.name}` : ""}
-          </p>
+          <dl className="identity-stats">
+            <div className="identity-stat">
+              <dt>Code</dt>
+              <dd className="mono">{record.code}</dd>
+            </div>
+            {category ? (
+              <div className="identity-stat">
+                <dt>Category</dt>
+                <dd>{category.name}</dd>
+              </div>
+            ) : null}
+          </dl>
         </div>
         <Button type="button" variant="secondary" onClick={() => setEditing(true)}>
           Edit product

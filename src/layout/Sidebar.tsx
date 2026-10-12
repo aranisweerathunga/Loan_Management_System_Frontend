@@ -2,9 +2,10 @@ import type { Ref } from "react";
 import { NavLink } from "react-router-dom";
 import {
   BadgeCheck,
-  Banknote,
   ClipboardList,
   FolderTree,
+  HandCoins,
+  Landmark,
   Layers,
   LayoutDashboard,
   PanelLeftClose,
@@ -29,7 +30,7 @@ const mainItems: Item[] = [
 
 const loanItems: Item[] = [
   { label: "Loan Applications", to: "/loan-applications", icon: ClipboardList },
-  { label: "Loan Facilities", to: "/loan-facilities", icon: Banknote },
+  { label: "Loan Facilities", to: "/loan-facilities", icon: HandCoins },
 ];
 
 const productItems: Item[] = [
@@ -89,7 +90,7 @@ export function Sidebar({
     >
       <div className="sidebar__brand">
         <div className="brand-mark" aria-hidden="true">
-          <span>LM</span>
+          <Landmark size={20} strokeWidth={1.75} />
         </div>
         <div className="brand__text">
           <strong>Loan Management</strong>

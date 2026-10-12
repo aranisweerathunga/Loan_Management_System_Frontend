@@ -53,6 +53,7 @@ export function BorrowersPage() {
   return (
     <>
       <PageHeader
+        eyebrow="Workspace"
         title="Borrowers"
         description="People who can be linked to an employee profile. The list is loaded in full; search and pagination are not provided by the API."
         actions={

@@ -16,7 +16,7 @@
 
 .app-main {
   width: 100%;
-  max-width: 1680px;
+  max-width: 1600px;
   margin-inline: auto;
   padding: var(--space-8) var(--space-8) var(--space-12);
 }
@@ -30,10 +30,11 @@
   color: var(--color-text-on-sidebar);
   background: linear-gradient(
     180deg,
-    var(--color-sidebar-base) 0%,
+    var(--color-sidebar-start) 0%,
+    var(--color-sidebar-base) 38%,
     var(--color-sidebar-deep) 100%
   );
-  box-shadow: 1px 0 0 rgba(255, 255, 255, 0.06);
+  box-shadow: 1px 0 0 rgba(255, 255, 255, 0.05);
   overflow-x: hidden;
   overflow-y: auto;
   scrollbar-width: thin;
@@ -56,7 +57,7 @@
   flex: none;
   display: grid;
   place-items: center;
-  border: 1px solid rgba(142, 197, 255, 0.45);
+  border: 1px solid rgba(226, 188, 110, 0.5);
   border-radius: var(--radius-md);
   background: rgba(255, 255, 255, 0.08);
   color: var(--color-sidebar-accent);
@@ -139,7 +140,7 @@
 }
 
 .nav-link.is-active {
-  background: rgba(255, 255, 255, 0.14);
+  background: linear-gradient(90deg, rgba(226, 188, 110, 0.2), rgba(226, 188, 110, 0.07));
   color: white;
   font-weight: var(--font-weight-semibold);
 }
@@ -269,7 +270,7 @@
   inset: 0;
   z-index: var(--z-overlay);
   border: 0;
-  background: rgba(15, 23, 42, 0.48);
+  background: rgba(9, 29, 39, 0.55);
 }
 
 .sidebar__close {
@@ -287,11 +288,11 @@
   display: flex;
   align-items: center;
   gap: var(--space-4);
-  padding: 0 var(--space-6);
-  background-color: var(--color-sidebar-deep);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 1px 3px rgba(1, 27, 76, 0.28);
-  color: #ffffff;
+  padding: 0 var(--space-8);
+  background-color: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+  box-shadow: 0 1px 2px rgba(9, 29, 39, 0.04);
+  color: var(--color-text);
 }
 
 .app-header .breadcrumbs {
@@ -310,24 +311,8 @@
   white-space: nowrap;
 }
 
-.app-header .breadcrumbs a,
 .app-header .breadcrumbs .muted {
-  color: rgba(255, 255, 255, 0.78);
-}
-
-.app-header .breadcrumbs .muted {
-  color: rgba(255, 255, 255, 0.55);
-}
-
-.app-header .breadcrumbs a:hover {
-  color: #ffffff;
-}
-
-.app-header .breadcrumbs [aria-current="page"] {
-  color: #ffffff;
-  font-size: 0.9375rem;
-  font-weight: var(--font-weight-semibold);
-  letter-spacing: -0.005em;
+  color: var(--color-border-strong);
 }
 
 .header-menu {
@@ -372,79 +357,110 @@
 }
 
 .breadcrumbs [aria-current="page"] {
-  color: var(--color-text);
-  font-weight: 600;
+  color: var(--color-heading);
+  font-size: 0.9375rem;
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: -0.005em;
 }
 
+/* Notifications and Account share one capsule. */
 .header-tools {
   display: flex;
   align-items: center;
-  gap: var(--space-2);
+  gap: 2px;
+  padding: 4px;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: var(--shadow-card);
 }
 
 .header-disclosure {
   position: relative;
 }
 
-.header-tool,
-.app-header .header-menu.button {
+.header-tool {
   display: flex;
   align-items: center;
-  gap: var(--space-2);
+  gap: 10px;
   min-height: 40px;
   padding: 0 var(--space-3);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  border-radius: var(--radius-md);
-  background: rgba(255, 255, 255, 0.07);
-  color: #ffffff;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--color-text-secondary);
   transition:
     background-color var(--transition),
-    border-color var(--transition);
+    color var(--transition);
+}
+
+.header-tool.icon-button {
+  width: 40px;
+  padding: 0;
+  justify-content: center;
 }
 
 .header-tool:hover,
-.app-header .header-menu.button:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.16);
-  border-color: rgba(255, 255, 255, 0.3);
-  color: #ffffff;
+.header-tool[aria-expanded="true"] {
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
 }
 
-.app-header .header-menu.button:focus-visible,
-.app-header .header-tool:focus-visible {
-  outline: 2px solid #ffffff;
-  outline-offset: 2px;
-  box-shadow: none;
+/* Account: the user icon becomes a small avatar chip. */
+.header-tool:not(.icon-button) {
+  padding-left: 4px;
+  padding-right: var(--space-4);
+}
+
+.header-tool:not(.icon-button) > svg {
+  box-sizing: content-box;
+  padding: 7px;
+  border-radius: 50%;
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+}
+
+.header-tool:not(.icon-button):hover > svg,
+.header-tool:not(.icon-button)[aria-expanded="true"] > svg {
+  background: var(--color-surface);
 }
 
 .header-tool__text {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  color: var(--color-heading);
   font-size: var(--text-sm);
+  font-weight: var(--font-weight-semibold);
   line-height: 1.2;
 }
 
+.header-tool__text strong {
+  font-weight: inherit;
+}
+
 .header-tool__text small {
-  color: rgba(255, 255, 255, 0.76);
+  color: var(--color-text-secondary);
   font-size: var(--text-2xs);
 }
 
 .header-panel {
   position: absolute;
-  top: calc(100% + 8px);
+  top: calc(100% + 14px);
   right: 0;
   width: min(320px, calc(100vw - 32px));
-  padding: var(--space-4);
+  padding: var(--space-5);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
   background: var(--color-surface);
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--shadow-lg);
   color: var(--color-text);
 }
 
 .header-panel h2 {
-  font-size: var(--text-sm);
   margin-bottom: var(--space-2);
+  color: var(--color-heading);
+  font-size: var(--text-md);
 }
 
 .header-panel p {
@@ -490,6 +506,10 @@
     display: inline-flex;
   }
 
+  .app-header {
+    padding: 0 var(--space-5);
+  }
+
   .app-main {
     padding: var(--space-6) var(--space-5) var(--space-10);
   }
@@ -498,6 +518,10 @@
 @media (max-width: 720px) {
   .header-tool__text {
     display: none;
+  }
+
+  .header-tool:not(.icon-button) {
+    padding-right: 4px;
   }
 
   .app-header {
@@ -514,4 +538,879 @@
   .sidebar {
     transition: none;
   }
+}
+
+/*
+ * Desktop: no header bar. Notifications and Account float at the top right of the
+ * viewport; breadcrumbs remain as plain text on record pages (they only repeat the
+ * heading on top-level pages, so those are hidden). Below 1100px the header stays a
+ * bar because it hosts the navigation menu button.
+ */
+@media (min-width: 1100px) {
+  .app-header {
+    position: static;
+    height: 56px;
+    background: transparent;
+    border-bottom: 0;
+    box-shadow: none;
+  }
+
+  .app-header .breadcrumbs:has(li:only-child) {
+    visibility: hidden;
+  }
+
+  .app-main {
+    padding-top: var(--space-4);
+  }
+
+  .header-tools {
+    position: fixed;
+    top: var(--space-2);
+    right: var(--space-6);
+    z-index: var(--z-header);
+  }
+}
+
+/* Header status (top-level pages): today's date and live data state. Desktop only. */
+.header-status {
+  display: none;
+}
+
+@media (min-width: 1100px) {
+  .header-status {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    min-width: 0;
+  }
+
+  .header-status__date {
+    color: var(--color-heading);
+    font-size: var(--text-sm);
+    font-weight: var(--font-weight-medium);
+    white-space: nowrap;
+  }
+
+  .header-status__clock {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 3px 11px 3px 9px;
+    border: 1px solid var(--color-border);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.8);
+    color: var(--color-heading);
+    font-size: var(--text-xs);
+    font-variant-numeric: tabular-nums;
+    font-weight: var(--font-weight-semibold);
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+  }
+
+  .header-status__clock svg {
+    color: var(--color-primary);
+  }
+
+  .header-status__alert {
+    padding: 3px 10px;
+    border: 1px solid var(--color-warning-border);
+    border-radius: 999px;
+    background: var(--color-warning-bg);
+    color: var(--color-warning);
+    font-size: var(--text-xs);
+    font-weight: var(--font-weight-medium);
+    white-space: nowrap;
+  }
+}
+
+/*
+ * Sidebar icon colour. Each destination gets its own tint; the icon sits on a small
+ * tinted tile. Keyed on href so the navigation markup stays untouched.
+ */
+.nav-link[href="/dashboard"] {
+  --nav-tint: #f0b48a;
+}
+
+.nav-link[href="/borrowers"] {
+  --nav-tint: #f3cd84;
+}
+
+.nav-link[href="/loan-applications"] {
+  --nav-tint: #f0a08a;
+}
+
+.nav-link[href="/loan-facilities"] {
+  --nav-tint: #a9d8a4;
+}
+
+.nav-link[href="/product-categories"] {
+  --nav-tint: #8fd0c8;
+}
+
+.nav-link[href="/products"] {
+  --nav-tint: #deaac8;
+}
+
+.nav-link[href="/grades"] {
+  --nav-tint: #c3d68c;
+}
+
+.nav-link svg,
+.nav-link.is-active svg {
+  box-sizing: content-box;
+  padding: 6px;
+  border-radius: 9px;
+  background: color-mix(in srgb, var(--nav-tint, var(--color-sidebar-accent)) 15%, transparent);
+  color: var(--nav-tint, var(--color-sidebar-accent));
+  opacity: 1;
+  transition: background-color var(--transition);
+}
+
+.nav-link:hover svg {
+  background: color-mix(in srgb, var(--nav-tint, var(--color-sidebar-accent)) 24%, transparent);
+}
+
+.nav-link.is-active svg {
+  background: color-mix(in srgb, var(--nav-tint, var(--color-sidebar-accent)) 30%, transparent);
+}
+
+.nav-link {
+  gap: 10px;
+  padding-left: 8px;
+}
+
+.nav-sub .nav-link {
+  padding-left: 30px;
+}
+
+.sidebar.is-collapsed .nav-link,
+.sidebar.is-collapsed .nav-sub .nav-link {
+  padding-left: 0;
+}
+
+/* Scale pass: smaller navigation icons and brand. */
+.nav-link svg,
+.nav-link.is-active svg {
+  width: 16px;
+  height: 16px;
+  padding: 5px;
+  border-radius: 8px;
+}
+
+.nav-link,
+.nav-button {
+  min-height: 38px;
+}
+
+.brand-mark {
+  width: 34px;
+  height: 34px;
+}
+
+.brand-mark svg {
+  width: 18px;
+  height: 18px;
+}
+
+.sidebar__brand strong {
+  font-size: 0.875rem;
+}
+
+/* ==========================================================================
+   Sidebar refinement: depth, quiet icons, clear active state
+   ========================================================================== */
+
+.sidebar {
+  background:
+    radial-gradient(120% 55% at 0% 0%, rgba(226, 188, 110, 0.16), transparent 60%),
+    linear-gradient(
+      180deg,
+      var(--color-sidebar-start) 0%,
+      var(--color-sidebar-base) 45%,
+      var(--color-sidebar-deep) 100%
+    );
+}
+
+.sidebar__brand {
+  background: rgba(0, 0, 0, 0.16);
+  border-bottom-color: rgba(255, 255, 255, 0.06);
+}
+
+.sidebar__nav {
+  gap: 2px;
+  padding-top: var(--space-4);
+}
+
+.nav-section {
+  margin-top: var(--space-3);
+  padding-top: var(--space-4);
+  border-top-color: rgba(255, 255, 255, 0.06);
+}
+
+.nav-section__label {
+  margin-bottom: var(--space-2);
+  padding-left: 8px;
+  color: #c6d7dc;
+  font-size: 0.6875rem;
+  letter-spacing: 0.12em;
+}
+
+/* Items: plain coloured icons; the tile appears on hover and on the active item. */
+.nav-link {
+  color: rgba(255, 255, 255, 0.84);
+  font-weight: var(--font-weight-medium);
+}
+
+.nav-link:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: #ffffff;
+}
+
+.nav-link svg {
+  background: transparent;
+}
+
+.nav-link:hover svg {
+  background: color-mix(in srgb, var(--nav-tint, var(--color-sidebar-accent)) 18%, transparent);
+}
+
+.nav-link.is-active {
+  background: linear-gradient(90deg, rgba(226, 188, 110, 0.22), rgba(226, 188, 110, 0.05));
+  box-shadow: inset 0 0 0 1px rgba(226, 188, 110, 0.2);
+  color: #ffffff;
+}
+
+.nav-link.is-active svg {
+  background: color-mix(in srgb, var(--nav-tint, var(--color-sidebar-accent)) 32%, transparent);
+}
+
+/* Items under Product Configuration align with the rest (the group label already nests them). */
+.nav-sub .nav-link {
+  padding-left: 8px;
+}
+
+.sidebar__footer {
+  border-top-color: rgba(255, 255, 255, 0.06);
+}
+
+.sidebar__footer .nav-button {
+  color: rgba(255, 255, 255, 0.66);
+}
+
+.sidebar__footer .nav-button:hover {
+  color: #ffffff;
+}
+
+/* ==========================================================================
+   Gold accent: brand, active state, group labels and hairlines
+   ========================================================================== */
+
+.sidebar {
+  background:
+    radial-gradient(120% 55% at 0% 0%, rgba(226, 188, 110, 0.16), transparent 60%),
+    linear-gradient(
+      180deg,
+      var(--color-sidebar-start) 0%,
+      var(--color-sidebar-base) 45%,
+      var(--color-sidebar-deep) 100%
+    );
+}
+
+.brand-mark {
+  border-color: rgba(226, 188, 110, 0.6);
+  background: rgba(226, 188, 110, 0.1);
+  color: var(--color-gold);
+}
+
+.sidebar__brand small {
+  color: rgba(226, 188, 110, 0.85);
+}
+
+.nav-section {
+  border-top-color: rgba(226, 188, 110, 0.14);
+}
+
+.nav-section__label {
+  color: #ecd28f;
+}
+
+.nav-link.is-active {
+  background: linear-gradient(90deg, rgba(226, 188, 110, 0.22), rgba(226, 188, 110, 0.05));
+  box-shadow: inset 0 0 0 1px rgba(226, 188, 110, 0.22);
+}
+
+.nav-link.is-active::before {
+  background: var(--color-gold);
+}
+
+.sidebar__footer {
+  border-top-color: rgba(226, 188, 110, 0.14);
+}
+
+/* Active tab: tinted fill only, no outline. */
+.nav-link.is-active {
+  box-shadow: none;
+}
+
+/* Active tab: no edge marker. */
+.nav-link.is-active::before {
+  display: none;
+}
+
+/* Sidebar gradient: warm cocoa at the top, deep espresso below, copper glow at the base. */
+.sidebar {
+  background:
+    radial-gradient(130% 40% at 0% 0%, rgba(226, 188, 110, 0.2), transparent 62%),
+    radial-gradient(120% 38% at 100% 100%, rgba(35, 135, 170, 0.3), transparent 65%),
+    linear-gradient(180deg, #0f4b60 0%, #0a3445 28%, #082836 62%, #06202a 100%);
+}
+
+/* ==========================================================================
+   Sidebar tabs: pill shape, soft raised active state (shape only)
+   ========================================================================== */
+
+.nav-link,
+.nav-button {
+  min-height: 42px;
+  border-radius: 999px;
+  padding-left: 10px;
+  padding-right: var(--space-4);
+}
+
+.nav-sub .nav-link {
+  padding-left: 10px;
+}
+
+.nav-link:hover,
+.nav-button:hover {
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.nav-link.is-active {
+  background: linear-gradient(90deg, rgba(226, 188, 110, 0.34), rgba(226, 188, 110, 0.12));
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.28);
+}
+
+.sidebar.is-collapsed .nav-link,
+.sidebar.is-collapsed .nav-button,
+.sidebar.is-collapsed .nav-sub .nav-link {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+/* Active tab: flat solid tint, no gradient. */
+.nav-link.is-active {
+  background: rgba(226, 188, 110, 0.22);
+}
+
+/* Active tab: more lift. */
+.nav-link.is-active {
+  background: rgba(226, 188, 110, 0.26);
+  box-shadow:
+    0 10px 22px rgba(0, 0, 0, 0.4),
+    0 2px 4px rgba(0, 0, 0, 0.25);
+  transform: translateY(-1px);
+}
+
+/* Sidebar icons: one colour, dark glyph on a solid gold rounded square. */
+.nav-link svg,
+.nav-link:hover svg,
+.nav-link.is-active svg {
+  background: var(--color-gold);
+  color: #06202a;
+  opacity: 1;
+}
+
+.nav-link:hover svg,
+.nav-link.is-active svg {
+  background: #e2bc6e;
+}
+
+/* Sidebar icon tiles: frosted-glass gold. */
+.nav-link svg,
+.nav-link:hover svg,
+.nav-link.is-active svg {
+  background: linear-gradient(145deg, rgba(240, 214, 150, 0.5), rgba(226, 188, 110, 0.2));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.4),
+    inset 0 0 0 1px rgba(255, 240, 210, 0.28),
+    0 2px 6px rgba(0, 0, 0, 0.28);
+  color: #fff1c9;
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
+
+.nav-link:hover svg,
+.nav-link.is-active svg {
+  background: linear-gradient(145deg, rgba(240, 214, 150, 0.62), rgba(226, 188, 110, 0.3));
+}
+
+/* Brand sub-label sits on the brightest part of the gradient: lighter amber for contrast. */
+.sidebar__brand small {
+  color: #ecd28f;
+}
+
+/* Active tab colour: clean aqua tint (a gold tint over teal turns olive). */
+.nav-link.is-active {
+  background: rgba(103, 198, 225, 0.24);
+}
+
+/* Sidebar icons: a little larger (18px glyph on a 30px tile). */
+.nav-link svg,
+.nav-link.is-active svg {
+  width: 18px;
+  height: 18px;
+  padding: 6px;
+  border-radius: 9px;
+}
+
+.nav-link {
+  gap: 12px;
+}
+
+/* Sidebar tabs: frosted glass (translucent, blurred, soft top light). */
+.nav-link:hover,
+.nav-button:hover {
+  background: rgba(255, 255, 255, 0.07);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+}
+
+.nav-link.is-active {
+  background: rgba(255, 255, 255, 0.15);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.28),
+    0 10px 22px rgba(0, 0, 0, 0.32);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  backdrop-filter: blur(14px) saturate(140%);
+}
+
+/* Active tab icon: dark glyph on a solid champagne tile so it stays crisp on the glass pill. */
+.nav-link.is-active svg {
+  background: #e2bc6e;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.5),
+    0 2px 6px rgba(0, 0, 0, 0.3);
+  color: #0a3445;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+/* Sidebar icon tiles: true gold (translucent gold over teal turns olive), dark glyph. */
+.nav-link svg {
+  background: linear-gradient(145deg, #f0cf86 0%, #d9b265 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.55),
+    0 2px 6px rgba(0, 0, 0, 0.28);
+  color: #0a3445;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+.nav-link:hover svg {
+  background: linear-gradient(145deg, #f6d994 0%, #e2bc6e 100%);
+}
+
+.nav-link.is-active svg {
+  background: linear-gradient(145deg, #fae3a6 0%, #eec778 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.65),
+    0 3px 10px rgba(226, 188, 110, 0.35);
+}
+
+/* Hover must keep the dark glyph (an earlier hover rule set it to cream). */
+.nav-link:hover svg,
+.nav-link:focus-visible svg {
+  color: #0a3445;
+}
+
+/* ==========================================================================
+   Brand block: gold glass mark, clear name, soft band
+   ========================================================================== */
+
+.sidebar__brand {
+  gap: 14px;
+  padding: 14px var(--space-4);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.02));
+  border-bottom: 1px solid rgba(226, 188, 110, 0.22);
+}
+
+.brand-mark {
+  width: 40px;
+  height: 40px;
+  border: 0;
+  border-radius: 12px;
+  background: linear-gradient(145deg, #f6d994 0%, #d9b265 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.6),
+    0 4px 12px rgba(0, 0, 0, 0.3),
+    0 0 0 4px rgba(226, 188, 110, 0.12);
+  color: #0a3445;
+}
+
+.brand-mark svg {
+  width: 22px;
+  height: 22px;
+}
+
+.sidebar__brand strong {
+  font-size: 0.9375rem;
+  letter-spacing: -0.01em;
+}
+
+.sidebar__brand small {
+  margin-top: 2px;
+  color: #ecd28f;
+  font-size: 0.625rem;
+  letter-spacing: 0.16em;
+}
+
+/* Brand mark: round gold-ringed seal (distinct from the square nav tiles). */
+.brand-mark {
+  width: 46px;
+  height: 46px;
+  border: 2px solid #e2bc6e;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 25%, #1b6a88 0%, #0a3445 60%, #06202a 100%);
+  box-shadow:
+    inset 0 0 0 3px rgba(6, 32, 42, 0.9),
+    inset 0 0 0 4px rgba(226, 188, 110, 0.55),
+    0 4px 14px rgba(0, 0, 0, 0.35),
+    0 0 0 5px rgba(226, 188, 110, 0.12);
+  color: #f0cf86;
+}
+
+.brand-mark svg {
+  width: 22px;
+  height: 22px;
+}
+
+/* Brand mark, simplified: bright teal circle, one thin gold ring, no halo. */
+.brand-mark {
+  width: 44px;
+  height: 44px;
+  border: 1.5px solid #e2bc6e;
+  background: linear-gradient(145deg, #2f93ad 0%, #1a6f8a 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.35),
+    0 3px 10px rgba(0, 0, 0, 0.2);
+  color: #f6d994;
+}
+
+/* Brand mark: bare gold emblem + fine divider (no tile, ring or fill). */
+.brand-mark {
+  width: auto;
+  height: auto;
+  padding: 2px 14px 2px 2px;
+  border: 0;
+  border-right: 1px solid rgba(226, 188, 110, 0.45);
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+  color: #f0cf86;
+}
+
+.brand-mark svg {
+  width: 30px;
+  height: 30px;
+}
+
+.sidebar__brand {
+  gap: 14px;
+}
+
+/* ==========================================================================
+   Brand lockup (final): glowing emblem, fading divider, clear name hierarchy
+   ========================================================================== */
+
+.sidebar__brand {
+  min-height: 78px;
+  gap: 16px;
+  padding: 14px 18px;
+  background:
+    radial-gradient(90px 60px at 40px 50%, rgba(226, 188, 110, 0.18), transparent 75%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.015));
+  border-bottom: 1px solid rgba(226, 188, 110, 0.28);
+}
+
+.brand-mark {
+  align-self: stretch;
+  display: grid;
+  place-items: center;
+  width: auto;
+  height: auto;
+  padding: 0 16px 0 2px;
+  border: 0;
+  border-right: 1px solid;
+  border-image: linear-gradient(
+      180deg,
+      rgba(226, 188, 110, 0),
+      rgba(226, 188, 110, 0.7) 50%,
+      rgba(226, 188, 110, 0)
+    )
+    1;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+  color: #f2d48c;
+}
+
+.brand-mark svg {
+  width: 32px;
+  height: 32px;
+  stroke-width: 1.5;
+  filter: drop-shadow(0 0 8px rgba(226, 188, 110, 0.45));
+}
+
+.sidebar__brand strong {
+  font-size: 1rem;
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: -0.015em;
+  line-height: 1.2;
+}
+
+.sidebar__brand small {
+  margin-top: 4px;
+  color: #ecd28f;
+  font-size: 0.625rem;
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0.24em;
+}
+
+/* Collapsed rail: emblem only, centred. */
+.sidebar.is-collapsed .brand-mark {
+  padding: 0;
+  border-right: 0;
+  border-image: none;
+}
+
+/* Brand lockup, clean version: flat darker band, crisp gold emblem, no glow or tint. */
+.sidebar__brand {
+  background: rgba(0, 20, 28, 0.28);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.brand-mark {
+  border-image: none;
+  border-right: 1px solid rgba(255, 255, 255, 0.18);
+  color: #f2cf7e;
+}
+
+.brand-mark svg {
+  stroke-width: 1.75;
+  filter: none;
+}
+
+/* ==========================================================================
+   Brand: centred, stacked lockup (replaces the row layout)
+   ========================================================================== */
+
+.sidebar__brand {
+  position: relative;
+  flex-direction: column;
+  justify-content: center;
+  gap: 10px;
+  min-height: 0;
+  padding: 24px 16px 20px;
+  background: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  text-align: center;
+}
+
+.brand-mark {
+  align-self: auto;
+  padding: 0;
+  border: 0;
+  border-image: none;
+  color: #f2cf7e;
+}
+
+.brand-mark svg {
+  width: 38px;
+  height: 38px;
+  stroke-width: 1.5;
+}
+
+.sidebar__brand strong {
+  font-size: 1.0625rem;
+  letter-spacing: -0.01em;
+}
+
+.sidebar__brand small {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 6px;
+  font-size: 0.625rem;
+  letter-spacing: 0.26em;
+}
+
+.sidebar__brand small::before,
+.sidebar__brand small::after {
+  content: "";
+  width: 18px;
+  height: 1px;
+  background: rgba(236, 210, 143, 0.55);
+}
+
+.sidebar__brand .sidebar__close {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  margin: 0;
+}
+
+.sidebar.is-collapsed .sidebar__brand {
+  padding: 22px 0 18px;
+}
+
+.sidebar.is-collapsed .brand-mark svg {
+  width: 30px;
+  height: 30px;
+}
+
+/* ==========================================================================
+   Brand plaque: cream letterhead card with a serif wordmark.
+   Deliberately unlike the dark navigation below it.
+   ========================================================================== */
+
+.sidebar__brand {
+  flex-direction: row;
+  justify-content: flex-start;
+  gap: 12px;
+  margin: 14px 12px 6px;
+  padding: 14px 16px;
+  border: 0;
+  border-radius: 14px;
+  background: #f6eed8;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.28);
+  text-align: left;
+}
+
+.brand-mark {
+  color: #0f4b60;
+}
+
+.brand-mark svg {
+  width: 30px;
+  height: 30px;
+  stroke-width: 1.6;
+}
+
+.sidebar__brand strong {
+  color: #0a3445;
+  font-size: 1.1875rem;
+  font-weight: 700;
+  letter-spacing: 0;
+  line-height: 1.1;
+}
+
+.sidebar__brand small {
+  display: block;
+  margin-top: 5px;
+  color: #7a5c14;
+  font-size: 0.625rem;
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0.22em;
+}
+
+.sidebar__brand small::before,
+.sidebar__brand small::after {
+  display: none;
+}
+
+.sidebar__brand .sidebar__close {
+  color: #0a3445;
+}
+
+.sidebar.is-collapsed .sidebar__brand {
+  justify-content: center;
+  margin: 12px 8px 6px;
+  padding: 12px 0;
+}
+
+.sidebar.is-collapsed .brand-mark svg {
+  width: 26px;
+  height: 26px;
+}
+
+/* Brand plaque, softened: dark frosted glass with a gold serif wordmark. */
+.sidebar__brand {
+  background: rgba(255, 255, 255, 0.08);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.18),
+    0 8px 20px rgba(0, 0, 0, 0.25);
+}
+
+.brand-mark {
+  color: #f2cf7e;
+}
+
+.sidebar__brand strong {
+  color: #f8ecc8;
+}
+
+.sidebar__brand small {
+  color: #ecd28f;
+}
+
+.sidebar__brand .sidebar__close {
+  color: #f8ecc8;
+}
+
+/* Brand typography: Cinzel wordmark, Playfair tagline in normal case. */
+.sidebar__brand strong {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  line-height: 1.15;
+}
+
+.sidebar__brand small {
+  margin-top: 6px;
+  font-size: 0.8125rem;
+  font-style: normal;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: none;
+}
+
+/* Brand typography: Cormorant Garamond wordmark, italic tagline. */
+.sidebar__brand strong {
+  font-size: 1.375rem;
+  font-weight: 700;
+  letter-spacing: 0;
+  line-height: 1;
+}
+
+.sidebar__brand small {
+  margin-top: 4px;
+  font-size: 1rem;
+  font-style: italic;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  line-height: 1;
+}
+
+/* Brand typography, understated: Inter, semibold name over a small spaced tagline. */
+.sidebar__brand strong {
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+}
+
+.sidebar__brand small {
+  margin-top: 4px;
+  font-family: var(--font-sans);
+  font-size: 0.625rem;
+  font-style: normal;
+  font-weight: var(--font-weight-medium);
+  letter-spacing: 0.18em;
+  line-height: 1.2;
+  text-transform: uppercase;
 }

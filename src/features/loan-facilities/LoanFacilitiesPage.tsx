@@ -88,6 +88,7 @@ export function LoanFacilitiesPage() {
   return (
     <div className="stack">
       <PageHeader
+        eyebrow="Loan Management"
         title="Loan Facilities"
         description="Facilities are created from approved loan applications. Amounts shown are the values returned for each facility."
       />

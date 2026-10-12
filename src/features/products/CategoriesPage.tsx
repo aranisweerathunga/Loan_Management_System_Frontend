@@ -35,6 +35,7 @@ export function CategoriesPage() {
   return (
     <>
       <PageHeader
+        eyebrow="Product Configuration"
         title="Categories"
         description="Groups for loan products. Purposes and versions are managed on each product, not here."
         actions={

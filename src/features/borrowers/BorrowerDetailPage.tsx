@@ -66,7 +66,12 @@ export function BorrowerDetailPage() {
                 <h1>{fullName(borrower.data)}</h1>
                 <ActiveBadge active={borrower.data.isActive} />
               </div>
-              <p className="muted mono">Record ID {borrower.data.id}</p>
+              <dl className="identity-stats">
+                <div className="identity-stat">
+                  <dt>Record ID</dt>
+                  <dd className="mono">{borrower.data.id}</dd>
+                </div>
+              </dl>
             </div>
             <Button type="button" variant="secondary" onClick={() => setEditing(true)}>
               Edit borrower

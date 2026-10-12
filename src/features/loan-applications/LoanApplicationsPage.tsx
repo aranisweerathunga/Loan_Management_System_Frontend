@@ -76,6 +76,7 @@ export function LoanApplicationsPage() {
   return (
     <div className="stack">
       <PageHeader
+        eyebrow="Loan Management"
         title="Loan Applications"
         description="Draft, submitted, under review, approved, and rejected applications."
         actions={<ButtonLink to="/loan-applications/new">New Application</ButtonLink>}

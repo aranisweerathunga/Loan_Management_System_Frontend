@@ -33,6 +33,7 @@ export function GradesPage() {
   return (
     <>
       <PageHeader
+        eyebrow="Reference"
         title="Grades"
         description="Configurable grades used when recording a borrower's grade history. Grades do not store loan limits."
         actions={

@@ -19,7 +19,11 @@ import {
   listLoanDisbursements,
   listLoanTransactions,
 } from "@/lib/api/loan-facilities";
-import type { CreateLoanDisbursementInput, LoanDisbursement, LoanTransaction } from "@/lib/api/types";
+import type {
+  CreateLoanDisbursementInput,
+  LoanDisbursement,
+  LoanTransaction,
+} from "@/lib/api/types";
 import { displayText, formatDateOnly, formatTimestamp, fullName } from "@/lib/format";
 import { formatMoneyAmount, isZeroMoney } from "@/lib/money";
 import { versionSummary } from "@/features/loan-applications/presentation";
@@ -66,8 +70,8 @@ export function LoanFacilityDetailPage() {
 
   const canDisburse = Boolean(
     facility.data &&
-      (facility.data.status === "PENDING_DISBURSEMENT" || facility.data.status === "ACTIVE") &&
-      !isZeroMoney(facility.data.remainingAuthorizedAmount),
+    (facility.data.status === "PENDING_DISBURSEMENT" || facility.data.status === "ACTIVE") &&
+    !isZeroMoney(facility.data.remainingAuthorizedAmount),
   );
 
   async function refreshFacility() {
@@ -125,38 +129,48 @@ export function LoanFacilityDetailPage() {
                   <h1 className="record-number">{facility.data.facilityNumber}</h1>
                   <FacilityStatusBadge status={facility.data.status} />
                 </div>
-                <ul className="identity-facts">
-                  <li>
-                    {application.data && application.data.borrower.id === facility.data.borrowerId ? (
-                      <Link to={`/borrowers/${application.data.borrower.id}`}>
-                        {fullName(application.data.borrower)}
-                      </Link>
-                    ) : (
-                      <Link to={`/borrowers/${facility.data.borrowerId}`}>Borrower</Link>
-                    )}
-                  </li>
-                  <li>
-                    {application.data &&
-                    application.data.loanProduct.id === facility.data.loanProductId ? (
-                      <Link to={`/products/${application.data.loanProduct.id}`}>
-                        {application.data.loanProduct.name} ({application.data.loanProduct.code})
-                      </Link>
-                    ) : (
-                      <Link to={`/products/${facility.data.loanProductId}`}>Loan product</Link>
-                    )}
-                  </li>
-                  <li>
-                    {application.data ? (
-                      <Link to={`/loan-applications/${application.data.id}`}>
-                        {application.data.applicationNumber}
-                      </Link>
-                    ) : (
-                      <Link to={`/loan-applications/${facility.data.loanApplicationId}`}>
-                        Originating application
-                      </Link>
-                    )}
-                  </li>
-                </ul>
+                <dl className="identity-stats">
+                  <div className="identity-stat">
+                    <dt>Borrower</dt>
+                    <dd>
+                      {application.data &&
+                      application.data.borrower.id === facility.data.borrowerId ? (
+                        <Link to={`/borrowers/${application.data.borrower.id}`}>
+                          {fullName(application.data.borrower)}
+                        </Link>
+                      ) : (
+                        <Link to={`/borrowers/${facility.data.borrowerId}`}>Borrower</Link>
+                      )}
+                    </dd>
+                  </div>
+                  <div className="identity-stat">
+                    <dt>Loan product</dt>
+                    <dd>
+                      {application.data &&
+                      application.data.loanProduct.id === facility.data.loanProductId ? (
+                        <Link to={`/products/${application.data.loanProduct.id}`}>
+                          {application.data.loanProduct.name} ({application.data.loanProduct.code})
+                        </Link>
+                      ) : (
+                        <Link to={`/products/${facility.data.loanProductId}`}>Loan product</Link>
+                      )}
+                    </dd>
+                  </div>
+                  <div className="identity-stat">
+                    <dt>Application</dt>
+                    <dd>
+                      {application.data ? (
+                        <Link to={`/loan-applications/${application.data.id}`}>
+                          {application.data.applicationNumber}
+                        </Link>
+                      ) : (
+                        <Link to={`/loan-applications/${facility.data.loanApplicationId}`}>
+                          Originating application
+                        </Link>
+                      )}
+                    </dd>
+                  </div>
+                </dl>
                 {isZeroMoney(facility.data.remainingAuthorizedAmount) ? (
                   <p className="state-note">
                     Remaining authorization:{" "}
@@ -241,7 +255,9 @@ export function LoanFacilityDetailPage() {
                               ) : application.isPending ? (
                                 "Loading…"
                               ) : (
-                                <Link to={`/borrowers/${facility.data.borrowerId}`}>View borrower</Link>
+                                <Link to={`/borrowers/${facility.data.borrowerId}`}>
+                                  View borrower
+                                </Link>
                               ),
                           },
                           {
@@ -250,19 +266,23 @@ export function LoanFacilityDetailPage() {
                               application.data &&
                               application.data.loanProduct.id === facility.data.loanProductId ? (
                                 <Link to={`/products/${application.data.loanProduct.id}`}>
-                                  {application.data.loanProduct.name} ({application.data.loanProduct.code})
+                                  {application.data.loanProduct.name} (
+                                  {application.data.loanProduct.code})
                                 </Link>
                               ) : application.isPending ? (
                                 "Loading…"
                               ) : (
-                                <Link to={`/products/${facility.data.loanProductId}`}>View product</Link>
+                                <Link to={`/products/${facility.data.loanProductId}`}>
+                                  View product
+                                </Link>
                               ),
                           },
                           {
                             label: "Product version",
                             value:
                               application.data &&
-                              application.data.productVersion.id === facility.data.productVersionId ? (
+                              application.data.productVersion.id ===
+                                facility.data.productVersionId ? (
                                 <span className="inline-status">
                                   <span>{versionSummary(application.data.productVersion)}</span>
                                   <VersionBadge status={application.data.productVersion.status} />
@@ -279,13 +299,12 @@ export function LoanFacilityDetailPage() {
                                   label: "Purpose",
                                   value:
                                     application.data?.productPurpose &&
-                                    application.data.productPurpose.id === facility.data.productPurposeId ? (
-                                      `${application.data.productPurpose.name} (${application.data.productPurpose.code})`
-                                    ) : application.isPending ? (
-                                      "Loading…"
-                                    ) : (
-                                      displayText(null)
-                                    ),
+                                    application.data.productPurpose.id ===
+                                      facility.data.productPurposeId
+                                      ? `${application.data.productPurpose.name} (${application.data.productPurpose.code})`
+                                      : application.isPending
+                                        ? "Loading…"
+                                        : displayText(null),
                                 },
                               ]
                             : []),
@@ -472,7 +491,9 @@ function disbursementColumns(currencyCode: string) {
     {
       id: "recorded",
       header: "Recorded at",
-      cell: (row: LoanDisbursement) => <time dateTime={row.createdAt}>{formatTimestamp(row.createdAt)}</time>,
+      cell: (row: LoanDisbursement) => (
+        <time dateTime={row.createdAt}>{formatTimestamp(row.createdAt)}</time>
+      ),
     },
   ];
 }
@@ -505,12 +526,17 @@ function transactionColumns(currencyCode: string, disbursements: LoanDisbursemen
     {
       id: "recorded",
       header: "Recorded at",
-      cell: (row: LoanTransaction) => <time dateTime={row.createdAt}>{formatTimestamp(row.createdAt)}</time>,
+      cell: (row: LoanTransaction) => (
+        <time dateTime={row.createdAt}>{formatTimestamp(row.createdAt)}</time>
+      ),
     },
   ];
 }
 
-function disbursementSource(transaction: LoanTransaction, disbursements: LoanDisbursement[]): string {
+function disbursementSource(
+  transaction: LoanTransaction,
+  disbursements: LoanDisbursement[],
+): string {
   if (!transaction.loanDisbursementId) return "—";
   const match = disbursements.find((item) => item.id === transaction.loanDisbursementId);
   if (!match) return "Disbursement";

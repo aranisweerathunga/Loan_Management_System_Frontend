@@ -6,7 +6,11 @@ import { DefinitionList } from "@/components/Breadcrumbs";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { Panel } from "@/components/PageHeader";
 import { EmptyState, QueryState } from "@/components/QueryState";
-import { ApplicationStatusBadge, FacilityStatusBadge, VersionBadge } from "@/components/StatusBadge";
+import {
+  ApplicationStatusBadge,
+  FacilityStatusBadge,
+  VersionBadge,
+} from "@/components/StatusBadge";
 import { useToast } from "@/components/Toast";
 import { usePageMeta } from "@/components/pageMeta";
 import { ApiError, getErrorMessage } from "@/lib/api/client";
@@ -65,9 +69,9 @@ export function LoanApplicationDetailPage() {
   });
   const [editing, setEditing] = useState(false);
   const [editSession, setEditSession] = useState(0);
-  const [pendingAction, setPendingAction] = useState<"submit" | "review" | "approve" | "reject" | null>(
-    null,
-  );
+  const [pendingAction, setPendingAction] = useState<
+    "submit" | "review" | "approve" | "reject" | null
+  >(null);
   const [actionError, setActionError] = useState<string | null>(null);
   const [actionBusy, setActionBusy] = useState(false);
   const [createOpen, setCreateOpen] = useState(false);
@@ -107,7 +111,11 @@ export function LoanApplicationDetailPage() {
   }
 
   async function runDecision(authorizedPrincipalAmount?: string, remarks?: string) {
-    if ((pendingAction !== "approve" && pendingAction !== "reject") || actionBusy || !application.data) {
+    if (
+      (pendingAction !== "approve" && pendingAction !== "reject") ||
+      actionBusy ||
+      !application.data
+    ) {
       return;
     }
     if (pendingAction === "approve" && !authorizedPrincipalAmount) return;
@@ -144,7 +152,9 @@ export function LoanApplicationDetailPage() {
         currencyCode: "LKR",
       });
       await Promise.all([
-        queryClient.invalidateQueries({ queryKey: loanApplicationKeys.detail(applicationRecordId) }),
+        queryClient.invalidateQueries({
+          queryKey: loanApplicationKeys.detail(applicationRecordId),
+        }),
         queryClient.invalidateQueries({ queryKey: loanFacilityKeys.all }),
       ]);
       toast.success(`Facility ${created.facilityNumber} created.`);
@@ -262,40 +272,40 @@ export function LoanApplicationDetailPage() {
         ) : null}
       </QueryState>
       {pendingAction === "submit" || pendingAction === "review" ? (
-      <ConfirmDialog
-        open
-        title={
-          pendingAction === "review"
-            ? `Start review for ${application.data?.applicationNumber ?? "this application"}?`
-            : `Submit ${application.data?.applicationNumber ?? "this application"}?`
-        }
-        description={
-          pendingAction === "review"
-            ? "This moves the application from Submitted to Under review."
-            : "After submission, the borrower, loan product, version, and purpose can no longer be edited in the current workflow."
-        }
-        confirmLabel={pendingAction === "review" ? "Start review" : "Submit application"}
-        busy={actionBusy}
-        error={actionError}
-        onConfirm={() => void runAction()}
-        onClose={() => {
-          if (!actionBusy) setPendingAction(null);
-        }}
-      />
+        <ConfirmDialog
+          open
+          title={
+            pendingAction === "review"
+              ? `Start review for ${application.data?.applicationNumber ?? "this application"}?`
+              : `Submit ${application.data?.applicationNumber ?? "this application"}?`
+          }
+          description={
+            pendingAction === "review"
+              ? "This moves the application from Submitted to Under review."
+              : "After submission, the borrower, loan product, version, and purpose can no longer be edited in the current workflow."
+          }
+          confirmLabel={pendingAction === "review" ? "Start review" : "Submit application"}
+          busy={actionBusy}
+          error={actionError}
+          onConfirm={() => void runAction()}
+          onClose={() => {
+            if (!actionBusy) setPendingAction(null);
+          }}
+        />
       ) : null}
       {pendingAction === "approve" || pendingAction === "reject" ? (
-      <WorkflowDecisionDialog
-        mode={pendingAction}
-        applicationNumber={application.data?.applicationNumber ?? "this application"}
-        busy={actionBusy}
-        error={actionError}
-        canDecide={application.data?.status === "UNDER_REVIEW"}
-        onApprove={(amount, remarks) => void runDecision(amount, remarks)}
-        onReject={(remarks) => void runDecision(undefined, remarks)}
-        onClose={() => {
-          if (!actionBusy) setPendingAction(null);
-        }}
-      />
+        <WorkflowDecisionDialog
+          mode={pendingAction}
+          applicationNumber={application.data?.applicationNumber ?? "this application"}
+          busy={actionBusy}
+          error={actionError}
+          canDecide={application.data?.status === "UNDER_REVIEW"}
+          onApprove={(amount, remarks) => void runDecision(amount, remarks)}
+          onReject={(remarks) => void runDecision(undefined, remarks)}
+          onClose={() => {
+            if (!actionBusy) setPendingAction(null);
+          }}
+        />
       ) : null}
       {createOpen && application.data ? (
         <CreateFacilityDialog
@@ -373,44 +383,65 @@ function ApplicationWorkspace({
             <h1 className="record-number">{application.applicationNumber}</h1>
             <ApplicationStatusBadge status={application.status} />
           </div>
-          <ul className="identity-facts">
-            <li>
-              <Link to={`/borrowers/${application.borrower.id}`}>
-                {fullName(application.borrower)}
-              </Link>
-            </li>
-            <li>
-              <Link to={`/products/${application.loanProduct.id}`}>
-                {application.loanProduct.name} ({application.loanProduct.code})
-              </Link>
-            </li>
-            <li>{versionSummary(version)}</li>
+          <dl className="identity-stats">
+            <div className="identity-stat">
+              <dt>Borrower</dt>
+              <dd>
+                <Link to={`/borrowers/${application.borrower.id}`}>
+                  {fullName(application.borrower)}
+                </Link>
+              </dd>
+            </div>
+            <div className="identity-stat">
+              <dt>Loan product</dt>
+              <dd>
+                <Link to={`/products/${application.loanProduct.id}`}>
+                  {application.loanProduct.name} ({application.loanProduct.code})
+                </Link>
+              </dd>
+            </div>
+            <div className="identity-stat">
+              <dt>Product version</dt>
+              <dd>{versionSummary(version)}</dd>
+            </div>
             {application.productPurpose ? (
-              <li>
-                {application.productPurpose.name} ({application.productPurpose.code})
-              </li>
+              <div className="identity-stat">
+                <dt>Purpose</dt>
+                <dd>
+                  {application.productPurpose.name} ({application.productPurpose.code})
+                </dd>
+              </div>
             ) : null}
             {application.facility ? (
-              <li className="inline-status">
-                <Link to={`/loan-facilities/${application.facility.id}`}>
-                  {application.facility.facilityNumber}
-                </Link>
-                <FacilityStatusBadge status={application.facility.status} />
-              </li>
+              <div className="identity-stat">
+                <dt>Facility</dt>
+                <dd className="inline-status">
+                  <Link to={`/loan-facilities/${application.facility.id}`}>
+                    {application.facility.facilityNumber}
+                  </Link>
+                  <FacilityStatusBadge status={application.facility.status} />
+                </dd>
+              </div>
             ) : null}
-            <li>
-              Created{" "}
-              <time dateTime={application.createdAt}>{formatTimestamp(application.createdAt)}</time>
-            </li>
-            {application.submittedAt ? (
-              <li>
-                Submitted{" "}
-                <time dateTime={application.submittedAt}>
-                  {formatTimestamp(application.submittedAt)}
+            <div className="identity-stat">
+              <dt>Created</dt>
+              <dd>
+                <time dateTime={application.createdAt}>
+                  {formatTimestamp(application.createdAt)}
                 </time>
-              </li>
+              </dd>
+            </div>
+            {application.submittedAt ? (
+              <div className="identity-stat">
+                <dt>Submitted</dt>
+                <dd>
+                  <time dateTime={application.submittedAt}>
+                    {formatTimestamp(application.submittedAt)}
+                  </time>
+                </dd>
+              </div>
             ) : null}
-          </ul>
+          </dl>
           {stateNote ? <p className="state-note">{stateNote}</p> : null}
         </div>
         {editing ? null : (
@@ -446,7 +477,9 @@ function ApplicationWorkspace({
               </Button>
             ) : null}
             {application.facility ? (
-              <ButtonLink to={`/loan-facilities/${application.facility.id}`}>View Facility</ButtonLink>
+              <ButtonLink to={`/loan-facilities/${application.facility.id}`}>
+                View Facility
+              </ButtonLink>
             ) : null}
           </div>
         )}

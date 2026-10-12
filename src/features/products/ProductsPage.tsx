@@ -63,6 +63,7 @@ export function ProductsPage() {
   return (
     <>
       <PageHeader
+        eyebrow="Product Configuration"
         title="Loan Products"
         description="Open a product to manage its purposes and versions."
         actions={
