@@ -18,8 +18,9 @@ body,
 body {
   margin: 0;
   font-family: var(--font-sans);
-  font-size: var(--text-md);
+  font-size: 0.9375rem;
   line-height: var(--leading-body);
+  font-kerning: normal;
   color: var(--color-text);
   background: var(--color-bg);
   text-rendering: optimizeLegibility;
@@ -146,11 +147,18 @@ img {
 
 .numeric {
   font-variant-numeric: tabular-nums;
-  font-family: var(--font-mono);
 }
 
 .required-mark {
   color: var(--color-danger);
+}
+
+@media (max-width: 720px) {
+  input,
+  select,
+  textarea {
+    font-size: 1rem;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
