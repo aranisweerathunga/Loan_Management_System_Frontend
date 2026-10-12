@@ -1,12 +1,12 @@
 :root {
-  --color-sidebar-base: #2855b8;
-  --color-sidebar-deep: #1e429f;
-  --color-sidebar-selected: #173f9e;
-  --color-sidebar-start: #315fc1;
-  --color-sidebar-end: #214aa8;
-  --color-primary: #2563eb;
-  --color-primary-hover: #1d4ed8;
-  --color-primary-soft: #eff6ff;
+  --color-sidebar-base: #00358a;
+  --color-sidebar-deep: #011b4c;
+  --color-sidebar-selected: #00153a;
+  --color-sidebar-start: #0041a7;
+  --color-sidebar-end: #011b4c;
+  --color-primary: #0041a7;
+  --color-primary-hover: #00358a;
+  --color-primary-soft: #e8f0fb;
   --color-bg: #f6f8fc;
   --color-surface: #ffffff;
   --color-surface-subtle: #f8fafc;
@@ -54,7 +54,7 @@
   --text-2xl: 1.75rem;
   --leading-tight: 1.25;
   --leading-body: 1.5;
-  --focus-ring: 0 0 0 3px rgba(37, 99, 235, 0.35);
+  --focus-ring: 0 0 0 3px rgba(0, 65, 167, 0.35);
   --transition: 160ms ease;
   --sidebar-width: 260px;
   --sidebar-width-collapsed: 76px;
